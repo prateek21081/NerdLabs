@@ -62,10 +62,20 @@ def register():
     else:
         return render_template('auth/register.html')
 
-@app.route('/product/<prod_id>')
+@app.route('/product/id/<prod_id>')
 def get_product(prod_id):
     cur.execute("SELECT * FROM product WHERE prod_id = %s", [prod_id])
     keys = cur.column_names
     values = cur.fetchone()
     res = dict(zip(keys, values))
+    return json.dumps(res)
+
+@app.route('/product/category/<category>')
+def get_product_category(category):
+    cur.execute(f"SELECT * FROM {category}")
+    keys = cur.column_names
+    records = cur.fetchall()
+    res = list()
+    for rec in records:
+        res.append(dict(zip(keys, rec)))
     return json.dumps(res)
