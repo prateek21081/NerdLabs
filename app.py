@@ -21,6 +21,14 @@ def login():
         username = request.form['username']
         password = request.form['password']
         error = None
+        cur.execute("SELECT * FROM test WHERE username = %s", [username])
+        user = cur.fetchone()
+        if user is None:
+            error = "Incorrect username."
+        elif not password == user[1]:
+            error = "Incorrect password."
+        if error:
+            return error
         return f'username: {username}, password: {password}'
     return render_template('auth/login.html')
 
@@ -35,14 +43,9 @@ def register():
         if not username:
             error = 'Username is required.'
         if error is None:
-            cur.execute("INSERT INTO test VALUES (%s, %s)", (username, password))
+            cur.execute("INSERT INTO test VALUES (%s, %s)", [username, password])
             return 'User registered successfully'
         else:
             return error
     else:
         return render_template('auth/register.html')
-
-def valid_login(username, password):
-    if username == 'admin' and password == 'pass':
-        return True
-    return False
