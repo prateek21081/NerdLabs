@@ -1,7 +1,15 @@
-from flask import Flask, request, render_template
+from flask import (
+    Flask,
+    request,
+    render_template,
+    session,
+    redirect,
+    url_for
+)
 import mysql.connector
 
 app = Flask(__name__)
+app.secret_key = b's3cr3t_k3y'
 db = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
@@ -13,7 +21,7 @@ cur = db.cursor()
 
 @app.route('/')
 def root():
-    return "root"
+    return "Welcome to NerdLabs!"
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -21,7 +29,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         error = None
-        cur.execute("SELECT * FROM test WHERE username = %s", [username])
+        cur.execute("SELECT cust_id, password FROM customer WHERE username = %s", [username])
         user = cur.fetchone()
         if user is None:
             error = "Incorrect username."
@@ -29,7 +37,10 @@ def login():
             error = "Incorrect password."
         if error:
             return error
-        return f'username: {username}, password: {password}'
+        else:
+            session.clear()
+            session['user_id'] = user[0]
+            return f'username: {username}, password: {password}'
     return render_template('auth/login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
