@@ -7,6 +7,7 @@ from flask import (
     url_for
 )
 import mysql.connector
+import json
 
 app = Flask(__name__)
 app.secret_key = b's3cr3t_k3y'
@@ -60,3 +61,11 @@ def register():
             return error
     else:
         return render_template('auth/register.html')
+
+@app.route('/product/<prod_id>')
+def get_product(prod_id):
+    cur.execute("SELECT * FROM product WHERE prod_id = %s", [prod_id])
+    keys = cur.column_names
+    values = cur.fetchone()
+    res = dict(zip(keys, values))
+    return json.dumps(res)
