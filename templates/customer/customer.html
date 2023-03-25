@@ -1,0 +1,40 @@
+<!-- customer.html -->
+
+<html>
+  <head>
+    <title>Customer Info</title>
+  </head>
+  <body>
+    <h1>Customer Information</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Customer ID</th>
+          <th>Username</th>
+          <th>Password</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Address Location</th>
+          <th>Address City</th>
+          <th>Address PIN</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ customer['cust_id'] }}</td>
+          <td>{{ customer['username'] }}</td>
+          <td>{{ '*' * customer['password']|length }}</td>
+          <td>{{ customer['phone'] }}</td>
+          <td>{{ customer['email'] }}</td>
+          <td>{{ customer['first_name'] }}</td>
+          <td>{{ customer['last_name'] }}</td>
+          <td>{{ customer['addr_loc'] }}</td>
+          <td>{{ customer['addr_city'] }}</td>
+          <td>{{ customer['addr_pin'] }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
