@@ -15,7 +15,7 @@ db = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
     user = "admin",
-    password = "pass"
+    password = "password"
 )
 db.autocommit = True
 cur = db.cursor()
@@ -68,14 +68,27 @@ def get_product(prod_id):
     keys = cur.column_names
     values = cur.fetchone()
     res = dict(zip(keys, values))
-    return json.dumps(res)
+    return render_template('product/product.html', product=res)
 
-@app.route('/product/category/<category>')
-def get_product_category(category):
-    cur.execute(f"SELECT * FROM {category}")
+@app.route('/product/search/<brand>')
+def get_product_brand(brand):
+    cur.execute("SELECT * FROM product WHERE brand = %s", [brand])
     keys = cur.column_names
     records = cur.fetchall()
     res = list()
     for rec in records:
         res.append(dict(zip(keys, rec)))
-    return json.dumps(res)
+    return render_template('product/brand.html', product=res)
+
+# @app.route('/product/category/<category>')
+# def get_product_category(category):
+#     cur.execute(f"SELECT * FROM {category}")
+#     keys = cur.column_names
+#     records = cur.fetchall()
+#     res = list()
+#     for rec in records:
+#         res.append(dict(zip(keys, rec)))
+#     return render_template('product/product.html', products=res)
+
+if __name__ == '__main__':
+    app.run()
