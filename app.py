@@ -72,7 +72,10 @@ def get_product(prod_id):
     keys = cur.column_names
     values = cur.fetchone()
     res = dict(zip(keys, values))
-    return render_template('product/product.html', product=res)
+    context = {
+        'product': res
+    }
+    return render_template('product/product.html', context=context)
 
 <<<<<<< HEAD
 # Searching for a product using product brand

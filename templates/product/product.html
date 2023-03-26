@@ -8,42 +8,12 @@
     <h1>Product Information</h1>
 
     <table>
+        {% for attr in context.product %}
         <tr>
-            <td>Product ID:</td>
-            <td>{{ product.prod_id }}</td>
+            <td>{{ attr }}</td>
+            <td>{{ context.product[attr] }}</td>
         </tr>
-        <tr>
-            <td>Product Name:</td>
-            <td>{{ product.prod_name }}</td>
-        </tr>
-        <tr>
-            <td>Quantity:</td>
-            <td>{{ product.quantity }}</td>
-        </tr>
-        <tr>
-            <td>Brand:</td>
-            <td>{{ product.brand }}</td>
-        </tr>
-        <tr>
-            <td>MRP:</td>
-            <td>{{ product.mrp }}</td>
-        </tr>
-        <tr>
-            <td>Discount:</td>
-            <td>{{ product.discount }}%</td>
-        </tr>
-        <tr>
-            <td>Price:</td>
-            <td>{{ product.price }}</td>
-        </tr>
-        <tr>
-            <td>Model:</td>
-            <td>{{ product.model }}</td>
-        </tr>
-        <tr>
-            <td>Image:</td>
-            <td>{{ product.image }}</td>
-        </tr>
+        {% endfor %}
     </table>
 
 </body>
