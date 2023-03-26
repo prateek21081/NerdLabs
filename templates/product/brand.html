@@ -5,7 +5,7 @@
     <title>Product Search Results</title>
 </head>
 <body>
-    <h1>Product Search Results for {{ brand }}</h1>
+    <h1>Product Search Results for {{ context.brand }}</h1>
 
     <table>
         <thead>
@@ -22,7 +22,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for p in product %}
+            {% for p in context.products %}
             <tr>
                 <td>{{ p.prod_id }}</td>
                 <td>{{ p.prod_name }}</td>

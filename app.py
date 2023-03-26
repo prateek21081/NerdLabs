@@ -14,8 +14,8 @@ app.secret_key = b's3cr3t_k3y'
 db = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
-    user = "root",
-    password = "rootpassword$12"
+    user = "admin",
+    password = "pass"
 )
 db.autocommit = True
 cur = db.cursor()
@@ -83,7 +83,11 @@ def get_product_brand(brand):
     res = list()
     for rec in records:
         res.append(dict(zip(keys, rec)))
-    return render_template('product/brand.html', product=res)
+    context = {
+        'brand': brand,
+        'products': res
+    }
+    return render_template('product/brand.html', context=context)
 
 # Get all products in a particular category (Not Working)
 @app.route('/product/category/<category>')
