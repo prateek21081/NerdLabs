@@ -74,8 +74,12 @@ def get_product(prod_id):
     res = dict(zip(keys, values))
     return render_template('product/product.html', product=res)
 
+<<<<<<< HEAD
 # Searching for a product using product brand
 @app.route('/product/search/<brand>')
+=======
+@app.route('/product/brand/<brand>')
+>>>>>>> 56713c2 (add: category fetch route)
 def get_product_brand(brand):
     cur.execute("SELECT * FROM product WHERE brand = %s", [brand])
     keys = cur.column_names
@@ -89,7 +93,10 @@ def get_product_brand(brand):
     }
     return render_template('product/brand.html', context=context)
 
+<<<<<<< HEAD
 # Get all products in a particular category (Not Working)
+=======
+>>>>>>> 56713c2 (add: category fetch route)
 @app.route('/product/category/<category>')
 def get_product_category(category):
     cur.execute(f"SELECT * FROM {category}")
@@ -97,6 +104,7 @@ def get_product_category(category):
     records = cur.fetchall()
     res = list()
     for rec in records:
+<<<<<<< HEAD
         res.append(dict(zip(keys, rec)))
     return render_template('product/product.html', products=res)
 
@@ -152,6 +160,15 @@ def get_customer_city(city):
 # <---------------------------------------CART-------------------------------------------------------------->
 
 
+=======
+       res.append(dict(zip(keys, rec)))
+    context = {
+        'category': category,
+        'attributes': cur.column_names,
+        'products': res
+    }
+    return render_template('product/category.html', context=context)
+>>>>>>> 56713c2 (add: category fetch route)
 
 if __name__ == '__main__':
     app.run()
