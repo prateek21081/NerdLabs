@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+    <h3>Data for {{ context.title }}</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                {% for attr in context.attributes %}
+                <th>{{ attr }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in context.records %}
+            <tr>
+                {% for val in rec%}
+                <td>{{ val }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

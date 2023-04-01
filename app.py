@@ -61,7 +61,19 @@ def register():
             return error
     else:
         return render_template('auth/register.html')
-    
+
+@app.route('/data/<table>')
+def get_data(table):
+    cur.execute(f"SELECT * FROM {table}")
+    keys = cur.column_names
+    values = cur.fetchall()
+    res = {
+        "title": table,
+        "attributes": keys,
+        "records": values
+    }
+    return render_template('data.html', context=res)
+   
 
 # <---------------------------------------PRODUCTS-------------------------------------------------------------->
 
