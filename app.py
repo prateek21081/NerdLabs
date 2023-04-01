@@ -22,7 +22,7 @@ cur = db.cursor()
 
 @app.route('/')
 def root():
-    return "Welcome to NerdLabs!"
+    return render_template('homepage.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
