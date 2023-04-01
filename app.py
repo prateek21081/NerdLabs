@@ -14,8 +14,8 @@ app.secret_key = b's3cr3t_k3y'
 db = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
-    user = "admin",
-    password = "pass"
+    user = "root",
+    password = "rootpassword$12"
 )
 db.autocommit = True
 cur = db.cursor()
@@ -61,15 +61,31 @@ def register():
             return error
     else:
         return render_template('auth/register.html')
+    
 
+# <---------------------------------------PRODUCTS-------------------------------------------------------------->
+
+# Searching for a product using PID
 @app.route('/product/id/<prod_id>')
 def get_product(prod_id):
     cur.execute("SELECT * FROM product WHERE prod_id = %s", [prod_id])
     keys = cur.column_names
     values = cur.fetchone()
     res = dict(zip(keys, values))
-    return json.dumps(res)
+    return render_template('product/product.html', product=res)
 
+# Searching for a product using product brand
+@app.route('/product/search/<brand>')
+def get_product_brand(brand):
+    cur.execute("SELECT * FROM product WHERE brand = %s", [brand])
+    keys = cur.column_names
+    records = cur.fetchall()
+    res = list()
+    for rec in records:
+        res.append(dict(zip(keys, rec)))
+    return render_template('product/brand.html', product=res)
+
+# Get all products in a particular category (Not Working)
 @app.route('/product/category/<category>')
 def get_product_category(category):
     cur.execute(f"SELECT * FROM {category}")
@@ -78,4 +94,60 @@ def get_product_category(category):
     res = list()
     for rec in records:
         res.append(dict(zip(keys, rec)))
-    return json.dumps(res)
+    return render_template('product/product.html', products=res)
+
+# <---------------------------------------CUSTOMER-------------------------------------------------------------->
+
+# Get all customers in the database (Not Working)
+@app.route('/customers')
+def get_customers():
+    cur.execute("SELECT * FROM customer")
+    customers = cur.fetchall()
+    return render_template('customer/customer.html', customer=customers)
+
+# Get customer details using customer ID
+@app.route('/customer/id/<cust_id>')
+def get_customer(cust_id):
+    cur.execute("SELECT * FROM customer WHERE cust_id = %s", [cust_id])
+    keys = cur.column_names
+    values = cur.fetchone()
+    res = dict(zip(keys, values))
+    return render_template('customer/customer.html', customer=res)
+
+# Get customer details using customer username
+@app.route('/customer/username/<username>')
+def get_customer_username(username):
+    cur.execute("SELECT * FROM customer WHERE username = %s", [username])
+    keys = cur.column_names
+    values = cur.fetchone()
+    res = dict(zip(keys, values))
+    return render_template('customer/customer.html', customer=res)
+
+# Get all customers in a particular pincode range (Not working)
+@app.route('/customer/pincode/<addr_pin>')
+def get_customer_pincode(addr_pin):
+    cur.execute("SELECT * FROM customer WHERE addr_pin = %s", [addr_pin])
+    keys = cur.column_names
+    records = cur.fetchall()
+    res = list()
+    for rec in records:
+        res.append(dict(zip(keys, rec)))
+    return render_template('customer/customer.html', customer=res)
+
+# Get all customers in a particular city (Not working)
+@app.route('/customer/city/<city>')
+def get_customer_city(city):
+    cur.execute("SELECT * FROM customer WHERE addr_city = %s", [city])
+    keys = cur.column_names
+    records = cur.fetchall()
+    res = list()
+    for rec in records:
+        res.append(dict(zip(keys, rec)))
+    return render_template('customer/customer.html', customer=res)
+
+# <---------------------------------------CART-------------------------------------------------------------->
+
+
+
+if __name__ == '__main__':
+    app.run()
