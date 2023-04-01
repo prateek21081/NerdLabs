@@ -1,20 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Product Information</title>
-</head>
-<body>
-    <h1>Product Information</h1>
+{% extends "base.html" %}
+{% block content %}
+  <h1>Product Information</h1>
 
-    <table>
-        {% for attr in product %}
-        <tr>
-            <td>{{ attr }}</td>
-            <td>{{ product[attr] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-</body>
-</html>
+  <table>
+      {% for attr in product %}
+      <tr>
+          <td><b>{{ attr }}</b></td>
+          <td>{{ product[attr] }}</td>
+      </tr>
+      {% endfor %}
+  </table>
+{% endblock %}
