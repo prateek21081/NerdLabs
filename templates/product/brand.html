@@ -5,34 +5,22 @@
     <title>Product Search Results</title>
 </head>
 <body>
-    <h1>Product Search Results for {{ brand }}</h1>
+    <h1>Product Search Results for {{ context.brand }}</h1>
 
     <table>
         <thead>
             <tr>
-                <th>Product ID</th>
-                <th>Product Name</th>
-                <th>Quantity</th>
-                <th>Brand</th>
-                <th>MRP</th>
-                <th>Discount</th>
-                <th>Price</th>
-                <th>Model</th>
-                <th>Image</th>
+            {% for attr in context.attributes %}
+                <th>{{ attr }}</th>
+            {% endfor %}
             </tr>
         </thead>
         <tbody>
-            {% for p in product %}
+            {% for product in context.products %}
             <tr>
-                <td>{{ p.prod_id }}</td>
-                <td>{{ p.prod_name }}</td>
-                <td>{{ p.quantity }}</td>
-                <td>{{ p.brand }}</td>
-                <td>{{ p.mrp }}</td>
-                <td>{{ p.discount }}</td>
-                <td>{{ p.price }}</td>
-                <td>{{ p.model }}</td>
-                <td>{{ p.image }}</td>
+                {% for p in product %}
+                <td>{{ p }}</td>
+                {% endfor %}
             </tr>
             {% endfor %}
         </tbody>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Product Search Results</title>
+</head>
+<body>
+    <h1>Product Search Results for {{ context.category }}</h1>
+
+    <table>
+        <thead>
+            <tr>
+                {% for attr in context.attributes %}
+                <th>{{ attr }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in context.products %}
+            <tr>
+                {% for val in product %}
+                <td>{{ val }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

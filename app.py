@@ -14,8 +14,8 @@ app.secret_key = b's3cr3t_k3y'
 db = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
-    user = "root",
-    password = "rootpassword$12"
+    user = "admin",
+    password = "pass"
 )
 db.autocommit = True
 cur = db.cursor()
@@ -75,15 +75,17 @@ def get_product(prod_id):
     return render_template('product/product.html', product=res)
 
 # Searching for a product using product brand
-@app.route('/product/search/<brand>')
+@app.route('/product/brand/<brand>')
 def get_product_brand(brand):
     cur.execute("SELECT * FROM product WHERE brand = %s", [brand])
     keys = cur.column_names
     records = cur.fetchall()
-    res = list()
-    for rec in records:
-        res.append(dict(zip(keys, rec)))
-    return render_template('product/brand.html', product=res)
+    res = {
+        "brand": brand,
+        "attributes": keys,
+        "products": records,
+    }
+    return render_template('product/brand.html', context=res)
 
 # Get all products in a particular category (Not Working)
 @app.route('/product/category/<category>')
@@ -91,10 +93,12 @@ def get_product_category(category):
     cur.execute(f"SELECT * FROM {category}")
     keys = cur.column_names
     records = cur.fetchall()
-    res = list()
-    for rec in records:
-        res.append(dict(zip(keys, rec)))
-    return render_template('product/product.html', products=res)
+    res = {
+        "category": category,
+        "attributes": keys,
+        "products": records
+    }
+    return render_template('product/category.html', context=res)
 
 # <---------------------------------------CUSTOMER-------------------------------------------------------------->
 
