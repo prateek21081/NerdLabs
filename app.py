@@ -62,16 +62,25 @@ def register():
     else:
         return render_template('auth/register.html')
 
-@app.route('/data/<table>')
-def get_data(table):
-    cur.execute(f"SELECT * FROM {table}")
-    keys = cur.column_names
-    values = cur.fetchall()
-    res = {
-        "title": table,
-        "attributes": keys,
-        "records": values
-    }
+@app.route('/data', methods=['GET', 'POST'])
+def get_data():
+    if request.method == 'POST':
+        try:
+            cur.execute(f"SELECT * FROM {request.form['data']}")
+            keys = cur.column_names
+            values = cur.fetchall()
+            res = {
+                "message": None,
+                "title": request.form['data'],
+                "attributes": keys,
+                "records": values
+            }
+        except mysql.connector.Error as err:
+            res = {
+                "message": err
+            }
+    else:
+        res = None
     return render_template('data.html', context=res)
    
 

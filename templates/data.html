@@ -1,22 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
-    <h3>Data for {{ context.title }}</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                {% for attr in context.attributes %}
-                <th>{{ attr }}</th>
+    <form method="post" class="row g-3">
+      <div class="col-auto">
+        <label for="data" class="visually-hidden">Data</label>
+        <input type="text" name="data" class="form-control" id="inputPassword2" placeholder="Data" required>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-3">Submit</button>
+      </div>
+    </form>
+    {% if context %}
+        {% if context.message %}
+            <p>{{ context.message }}</p>
+        {% else %}
+        <h3>Data for {{ context.title }}</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    {% for attr in context.attributes %}
+                    <th>{{ attr }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for rec in context.records %}
+                <tr>
+                    {% for val in rec%}
+                    <td>{{ val }}</td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for rec in context.records %}
-            <tr>
-                {% for val in rec%}
-                <td>{{ val }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+        {% endif %}
+    {% endif %}
 {% endblock %}
