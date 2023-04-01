@@ -87,7 +87,7 @@ def get_product_brand(brand):
     }
     return render_template('product/brand.html', context=res)
 
-# Get all products in a particular category (Not Working)
+# Get all products in a particular category
 @app.route('/product/category/<category>')
 def get_product_category(category):
     cur.execute(f"SELECT * FROM {category}")
@@ -102,56 +102,65 @@ def get_product_category(category):
 
 # <---------------------------------------CUSTOMER-------------------------------------------------------------->
 
-# Get all customers in the database (Not Working)
-@app.route('/customers')
+# Get all customers in the database
+@app.route('/customer')
 def get_customers():
     cur.execute("SELECT * FROM customer")
-    customers = cur.fetchall()
-    return render_template('customer/customer.html', customer=customers)
+    keys = cur.column_names
+    records = cur.fetchall()
+    res = {
+        "attributes": keys,
+        "customers": records
+    }
+    return render_template('customer/customer.html', context=res)
 
 # Get customer details using customer ID
 @app.route('/customer/id/<cust_id>')
 def get_customer(cust_id):
     cur.execute("SELECT * FROM customer WHERE cust_id = %s", [cust_id])
     keys = cur.column_names
-    values = cur.fetchone()
-    res = dict(zip(keys, values))
-    return render_template('customer/customer.html', customer=res)
+    records = cur.fetchall()
+    res = {
+        "attributes": keys,
+        "customers": records
+    }
+    return render_template('customer/customer.html', context=res)
 
 # Get customer details using customer username
 @app.route('/customer/username/<username>')
 def get_customer_username(username):
     cur.execute("SELECT * FROM customer WHERE username = %s", [username])
     keys = cur.column_names
-    values = cur.fetchone()
-    res = dict(zip(keys, values))
-    return render_template('customer/customer.html', customer=res)
+    records = cur.fetchall()
+    res = {
+        "attributes": keys,
+        "customers": records
+    }
+    return render_template('customer/customer.html', context=res)
 
-# Get all customers in a particular pincode range (Not working)
+# Get all customers in a particular pincode
 @app.route('/customer/pincode/<addr_pin>')
 def get_customer_pincode(addr_pin):
     cur.execute("SELECT * FROM customer WHERE addr_pin = %s", [addr_pin])
     keys = cur.column_names
     records = cur.fetchall()
-    res = list()
-    for rec in records:
-        res.append(dict(zip(keys, rec)))
-    return render_template('customer/customer.html', customer=res)
+    res = {
+        "attributes": keys,
+        "customers": records
+    }
+    return render_template('customer/customer.html', context=res)
 
-# Get all customers in a particular city (Not working)
+# Get all customers in a particular city
 @app.route('/customer/city/<city>')
 def get_customer_city(city):
     cur.execute("SELECT * FROM customer WHERE addr_city = %s", [city])
     keys = cur.column_names
     records = cur.fetchall()
-    res = list()
-    for rec in records:
-        res.append(dict(zip(keys, rec)))
-    return render_template('customer/customer.html', customer=res)
-
-# <---------------------------------------CART-------------------------------------------------------------->
-
-
+    res = {
+        "attributes": keys,
+        "customers": records
+    }
+    return render_template('customer/customer.html', context=res)
 
 if __name__ == '__main__':
     app.run()
