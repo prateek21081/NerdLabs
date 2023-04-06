@@ -89,7 +89,9 @@ def get_data():
 # Searching for a product using PID
 @app.route('/product/id/<prod_id>')
 def get_product(prod_id):
-    cur.execute("SELECT * FROM product WHERE prod_id = %s", [prod_id])
+    prod_type = ['motherboard', 'gpu', 'processor', 'ram', 'storage', 'psu', 'cabinet']
+    category = prod_type[int(prod_id)//100]
+    cur.execute(f'SELECT * FROM product,{category} WHERE product.prod_id = %s AND {category}.prod_id = %s', [prod_id, prod_id])
     keys = cur.column_names
     values = cur.fetchone()
     res = dict(zip(keys, values))
@@ -111,7 +113,7 @@ def get_product_brand(brand):
 # Get all products in a particular category
 @app.route('/product/category/<category>')
 def get_product_category(category):
-    cur.execute(f"SELECT * FROM {category}")
+    cur.execute(f"SELECT * FROM product, {category} WHERE product.prod_id={category}.prod_id")
     keys = cur.column_names
     records = cur.fetchall()
     res = {
