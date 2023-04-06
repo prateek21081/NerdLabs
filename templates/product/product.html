@@ -3,11 +3,14 @@
   <h1>Product Information</h1>
 
   <table>
-      {% for attr in product %}
+      {% for attr in context.product %}
       <tr>
           <td><b>{{ attr }}</b></td>
-          <td>{{ product[attr] }}</td>
+          <td>{{ context.product[attr] }}</td>
       </tr>
       {% endfor %}
   </table>
+      <p>
+        {{ context.review }}
+      </p>
 {% endblock %}

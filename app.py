@@ -94,8 +94,19 @@ def get_product(prod_id):
     cur.execute(f'SELECT * FROM product,{category} WHERE product.prod_id = %s AND {category}.prod_id = %s', [prod_id, prod_id])
     keys = cur.column_names
     values = cur.fetchone()
-    res = dict(zip(keys, values))
-    return render_template('product/product.html', product=res)
+    product = dict(zip(keys, values))
+    cur.execute('SELECT * FROM review WHERE review.prod_id = %s', [prod_id])
+    keys = cur.column_names
+    values = cur.fetchall()
+    review = list()
+    for val in values:
+        review.append(dict(zip(keys, val)))
+    res = {
+        'product': product,
+        'review': review,
+        'category': category
+    }
+    return render_template('product/product.html', context=res)
 
 # Searching for a product using product brand
 @app.route('/product/brand/<brand>')
