@@ -91,21 +91,23 @@ def get_data():
 def get_product(prod_id):
     prod_type = ['motherboard', 'gpu', 'processor', 'ram', 'storage', 'psu', 'cabinet']
     category = prod_type[int(prod_id)//100]
-    cur.execute(f'SELECT * FROM product,{category} WHERE product.prod_id = %s AND {category}.prod_id = %s', [prod_id, prod_id])
+    res = dict()
+    cur.execute(f'SELECT * FROM product WHERE product.prod_id = %s', [prod_id])
     keys = cur.column_names
     values = cur.fetchone()
-    product = dict(zip(keys, values))
+    res['product'] = dict(zip(keys, values))
+    cur.execute(f'SELECT * FROM {category} WHERE {category}.prod_id = %s', [prod_id])
+    keys = cur.column_names
+    values = cur.fetchone()
+    res['meta'] = dict(zip(keys, values))
     cur.execute('SELECT * FROM review WHERE review.prod_id = %s', [prod_id])
     keys = cur.column_names
     values = cur.fetchall()
     review = list()
     for val in values:
         review.append(dict(zip(keys, val)))
-    res = {
-        'product': product,
-        'review': review,
-        'category': category
-    }
+    res['review'] = review
+    res['category'] = category
     return render_template('product/product.html', context=res)
 
 # Searching for a product using product brand
