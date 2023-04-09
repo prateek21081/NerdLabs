@@ -4,10 +4,14 @@ from flask import (
     render_template,
     session,
     redirect,
-    url_for
+    url_for,
+    jsonify,
+    make_response
 )
 import mysql.connector
-import json
+import jwt
+from datetime import datetime, timedelta
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = b's3cr3t_k3y'
@@ -19,6 +23,31 @@ db = mysql.connector.connect(
 )
 db.autocommit = True
 cur = db.cursor()
+
+def token_required(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+        if not token:
+            return make_response(jsonify({'message': 'Token missing!'}), 401)
+
+        try:
+            data = jwt.decode(token, app.secret_key)
+            cur.execute('SELECT username FROM customer WHERE username = %s', [data['username']])
+            cust_id = cur.fetchone()
+        except:
+            return make_response(jsonify({
+                'message': 'Token invalid!'
+            }), 401)
+        return func(cust_id, *args, **kwargs)
+    return decorated
+
+@app.route('/userid')
+@token_required
+def get_custid(cust_id):
+    return make_response(jsonify({'cust_id': cust_id}), 200)
 
 @app.route('/')
 def root():
@@ -37,11 +66,17 @@ def login():
         elif not password == user[1]:
             error = "Incorrect password."
         if error:
-            return error
+            return make_response(
+                'Could not verify',
+                401,
+                {'WWW-Authenticate' : 'Basic realm = "Invalid credentials!"'}
+            )
         else:
-            session.clear()
-            session['user_id'] = user[0]
-            return f'username: {username}, password: {password}'
+            token = jwt.encode({
+                'cust_id': user[0],
+                #'expiry': datetime.utcnow() + timedelta(minutes=30)
+            }, app.secret_key)
+            return make_response(jsonify({'token' : token}), 201)
     return render_template('auth/login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -50,15 +85,13 @@ def register():
         username = request.form['username']
         password = request.form['password']
         error = None
-        if not password:
-            error = 'Password is required.'
-        if not username:
-            error = 'Username is required.'
+        if not password or not username:
+            error = 'Username and password required.'
         if error is None:
             cur.execute("INSERT INTO test VALUES (%s, %s)", [username, password])
-            return 'User registered successfully'
+            return make_response('Successfully registered!', 201)
         else:
-            return error
+            return make_response('Invalid response!', 202)
     else:
         return render_template('auth/register.html')
 
