@@ -34,9 +34,8 @@ def token_required(func):
             return make_response(jsonify({'message': 'Token missing!'}), 401)
 
         try:
-            data = jwt.decode(token, app.secret_key)
-            cur.execute('SELECT username FROM customer WHERE username = %s', [data['username']])
-            cust_id = cur.fetchone()
+            data = jwt.decode(token, app.secret_key, algorithms=["HS256"])
+            cust_id = data['cust_id']
         except:
             return make_response(jsonify({
                 'message': 'Token invalid!'
@@ -75,7 +74,7 @@ def login():
             token = jwt.encode({
                 'cust_id': user[0],
                 #'expiry': datetime.utcnow() + timedelta(minutes=30)
-            }, app.secret_key)
+            }, app.secret_key, algorithm="HS256")
             return make_response(jsonify({'token' : token}), 201)
     return render_template('auth/login.html')
 
