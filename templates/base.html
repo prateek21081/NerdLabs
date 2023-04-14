@@ -2,12 +2,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.min.js" integrity="sha384-HRMeAkpEZ+fZ1QH3q/Ia0nG+Lfv0dTHwFw+WfIokr6wkA9ZD9d6U7jIb8z1UOMlL" crossorigin="anonymous"></script>
     </title>{% block title %}{% endblock %}</title>
   </head>
   <body>
   <nav class="navbar bg-dark navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
+    <div class="container-fluid" style = "margin-left: 10px; margin-right: 10px;">
       <a class="navbar-brand" href="#">NerdLabs</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -20,24 +23,29 @@
           <li class="nav-item">
             <a class="nav-link" href="/data">Data</a>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+          <div class="dropdown">
+            <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
               Categories
-            </a>
+            </button>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/product/category/processor">Processor</a></li>
-              <li><a class="dropdown-item" href="/product/category/motherboard">Motherboard</a></li>
-              <li><a class="dropdown-item" href="/product/category/ram">RAM</a></li>
-              <li><a class="dropdown-item" href="/product/category/cabinet">Cabinet</a></li>
-              <li><a class="dropdown-item" href="/product/category/gpu">GPU</a></li>
-              <li><a class="dropdown-item" href="/product/category/psu">PSU</a></li>
-              <li><a class="dropdown-item" href="/product/category/storage">Storage</a></li>
+              <li><a class="dropdown-item" href="/product/Processor">Processor</a></li>
+              <li><a class="dropdown-item" href="/product/MotherBoard">MotherBoard</a></li>
+              <li><a class="dropdown-item" href="/product/RAM">RAM</a></li>
+              <li><a class="dropdown-item" href="/product/Cabinet">Cabinet</a></li>
+              <li><a class="dropdown-item" href="/product/GPU">GPU</a></li>
+              <li><a class="dropdown-item" href="/product/PSU">PSU</a></li>
+              <li><a class="dropdown-item" href="/product/Storage">Storage</a></li>
             </ul>
-          </li>
+          </div>
         </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
+        
+        <form class="d-flex" role="search" style = "margin-top: 10px; margin-right: 15px;">
+         <!--link login to login.html-->
+
+
+          <a class="btn btn-outline-primary" href="/login" role="button">Login</a>
+          <a class="btn btn-outline-success" href="/register" role="button" style = "margin-left: 15px;">Register</a>
         </form>
       </div>
     </div>
