@@ -1,14 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="d-flex flex-column justify-content-center align-items-center mt-5">
-        <h1>Search for Data</h1>
-        <form method="post" action="/" class="w-50">
-            <div class="input-group mt-3">
-                <input type="text" name="data" class="form-control" placeholder="Search for data..." required>
-                <button type="submit" class="btn btn-primary">Search</button>
-            </div>
-        </form>
-    </div>
+<!-- create two variables screenwidth and screenheight -->
+{% set screenwidth = 500 %}
+{% set screenheight = 500 %}
+
+    <form method="post" class="row g-3">
+      <div class="col-auto">
+        <label for="data" class="visually-hidden">Data</label>
+        <input type="text" name="data" class="form-control" id="inputPassword2" placeholder="Search For.." required style="text-align:center; width: 500px; margin-top: 50px; margin-left: 500px;">
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-3" style = "margin-top: 50px; margin-left: 15px;">Submit</button>
+      </div>
+    </form>
     {% if context %}
         {% if context.message %}
             <p>{{ context.message }}</p>

@@ -1,3 +1,9 @@
+'''
+1. Connect Add Product so that it can add products to the database
+2. Fix Update Product so that it can update products in the database and also delete button alongside
+'''
+
+
 from flask import (
     Flask,
     request,
@@ -114,7 +120,27 @@ def get_data():
     else:
         res = None
     return render_template('data.html', context=res)
-   
+
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
+    if request.method == 'POST':
+        try:
+            cur.execute(f"SELECT * FROM {request.form['data']}")
+            keys = cur.column_names
+            values = cur.fetchall()
+            res = {
+                "message": None,
+                "title": request.form['data'],
+                "attributes": keys,
+                "records": values
+            }
+        except mysql.connector.Error as err:
+            res = {
+                "message": err
+            }
+    else:
+        res = None
+    return render_template('admin.html', context=res)
 
 # <---------------------------------------PRODUCTS-------------------------------------------------------------->
 
