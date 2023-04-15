@@ -24,8 +24,8 @@ app.secret_key = b's3cr3t_k3y'
 db = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
-    user = "root",
-    password = "rootpassword$12"
+    user = "admin",
+    password = "pass"
 )
 db.autocommit = True
 cur = db.cursor()
