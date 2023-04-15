@@ -34,11 +34,10 @@ def token_required(func):
     @wraps(func)
     def decorated(*args, **kwargs):
         token = None
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
-        if not token:
-            return make_response(jsonify({'message': 'Token missing!'}), 401)
-
+        try:
+            token = request.cookies['jwt']
+        except:
+            return make_response(jsonify({'message': 'Token missing! Please login or register'}), 401)
         try:
             data = jwt.decode(token, app.secret_key, algorithms=["HS256"])
             cust_id = data['cust_id']
@@ -72,16 +71,18 @@ def login():
             error = "Incorrect password."
         if error:
             return make_response(
-                'Could not verify',
+                error,
                 401,
                 {'WWW-Authenticate' : 'Basic realm = "Invalid credentials!"'}
             )
         else:
             token = jwt.encode({
                 'cust_id': user[0],
-                #'expiry': datetime.utcnow() + timedelta(minutes=30)
+                'expiry': str(datetime.utcnow()) + str(timedelta(minutes=30))
             }, app.secret_key, algorithm="HS256")
-            return make_response(jsonify({'token' : token}), 201)
+            resp = redirect('/')
+            resp.set_cookie('jwt', token);
+            return resp;
     return render_template('auth/login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
