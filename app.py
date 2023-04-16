@@ -1,6 +1,7 @@
 '''
 1. Connect Add Product so that it can add products to the database
 2. Fix Update Product so that it can update products in the database and also delete button alongside
+3. Fix the Add to Cart button so that it actually adds to cart
 '''
 
 
@@ -24,8 +25,8 @@ app.secret_key = b's3cr3t_k3y'
 db = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
-    user = "admin",
-    password = "pass"
+    user = "root",
+    password = "rootpassword$12"
 )
 db.autocommit = True
 cur = db.cursor()
@@ -36,14 +37,11 @@ def token_required(func):
         token = None
         try:
             token = request.cookies['jwt']
-        except:
-            return make_response(jsonify({'message': 'Token missing! Please login or register'}), 401)
-        try:
             data = jwt.decode(token, app.secret_key, algorithms=["HS256"])
             cust_id = data['cust_id']
         except:
             return make_response(jsonify({
-                'message': 'Token invalid!'
+                'message': 'Token invalid or missing. Login or Register to continue!'
             }), 401)
         return func(cust_id, *args, **kwargs)
     return decorated
@@ -143,31 +141,44 @@ def admin():
         res = None
     return render_template('admin.html', context=res)
 
+
+
 # <---------------------------------------PRODUCTS-------------------------------------------------------------->
 
 # Searching for a product using PID
-@app.route('/product/id/<prod_id>')
+@app.route('/product/id/<prod_id>', methods=['GET'])
 def get_product(prod_id):
-    prod_type = ['motherboard', 'gpu', 'processor', 'ram', 'storage', 'psu', 'cabinet']
-    category = prod_type[int(prod_id)//100]
-    res = dict()
-    cur.execute(f'SELECT * FROM product WHERE product.prod_id = %s', [prod_id])
-    keys = cur.column_names
-    values = cur.fetchone()
-    res['product'] = dict(zip(keys, values))
-    cur.execute(f'SELECT * FROM {category} WHERE {category}.prod_id = %s', [prod_id])
-    keys = cur.column_names
-    values = cur.fetchone()
-    res['meta'] = dict(zip(keys, values))
-    cur.execute('SELECT * FROM review WHERE review.prod_id = %s', [prod_id])
-    keys = cur.column_names
-    values = cur.fetchall()
-    review = list()
-    for val in values:
-        review.append(dict(zip(keys, val)))
-    res['review'] = review
-    res['category'] = category
-    return render_template('product/product.html', context=res)
+    if request.method == 'GET':
+        prod_type = ['motherboard', 'gpu', 'processor', 'ram', 'storage', 'psu', 'cabinet']
+        category = prod_type[int(prod_id)//100]
+        res = dict()
+        cur.execute(f'SELECT * FROM product WHERE product.prod_id = %s', [prod_id])
+        keys = cur.column_names
+        values = cur.fetchone()
+        res['product'] = dict(zip(keys, values))
+        cur.execute(f'SELECT * FROM {category} WHERE {category}.prod_id = %s', [prod_id])
+        keys = cur.column_names
+        values = cur.fetchone()
+        res['meta'] = dict(zip(keys, values))
+        cur.execute('SELECT * FROM review WHERE review.prod_id = %s', [prod_id])
+        keys = cur.column_names
+        values = cur.fetchall()
+        review = list()
+        for val in values:
+            review.append(dict(zip(keys, val)))
+        res['review'] = review
+        res['category'] = category
+        return render_template('product/product.html', context=res)
+    
+@app.route('/product/id/<prod_id>', methods=['POST'])
+@token_required
+def add_product_post(cust_id, prod_id):
+    if request.method == 'POST':
+        quantity = request.form['quantity']
+        print(cust_id, prod_id, quantity)
+        cur.execute('INSERT INTO cart VALUES (%s, %s, %s)', [cust_id, prod_id, quantity])
+        return render_template('cart.html')
+        
 
 # Searching for a product using product brand
 @app.route('/product/brand/<brand>')
