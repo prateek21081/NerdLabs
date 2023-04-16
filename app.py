@@ -120,18 +120,29 @@ def get_data():
         res = None
     return render_template('data.html', context=res)
 
-@app.route('/admin', methods=['GET', 'POST'])
+@app.route('/admin/addproduct', methods=['GET', 'POST'])
 def admin():
     if request.method == 'POST':
         try:
-            cur.execute(f"SELECT * FROM {request.form['data']}")
-            keys = cur.column_names
-            values = cur.fetchall()
+            rf = request.form.keys()
+            print(rf)
+            cur.execute(
+                "INSERT INTO product VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                [
+                    request.form['prod_id'], 
+                    request.form['prod_name'], 
+                    request.form['quantity'],
+                    request.form['brand'],
+                    request.form['mrp'],
+                    request.form['discount'],
+                    request.form['price'],
+                    request.form['model'],
+                    request.form['image'],
+                    request.form['GST']
+                ]
+            )
             res = {
                 "message": None,
-                "title": request.form['data'],
-                "attributes": keys,
-                "records": values
             }
         except mysql.connector.Error as err:
             res = {
