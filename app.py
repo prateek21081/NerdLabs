@@ -25,8 +25,8 @@ app.secret_key = b's3cr3t_k3y'
 db = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
-    user = "root",
-    password = "rootpassword$12"
+    user = "admin",
+    password = "pass"
 )
 db.autocommit = True
 cur = db.cursor()
@@ -172,12 +172,10 @@ def get_product(prod_id):
     
 @app.route('/product/id/<prod_id>', methods=['POST'])
 @token_required
-def add_product_post(cust_id, prod_id):
-    if request.method == 'POST':
-        quantity = request.form['quantity']
-        print(cust_id, prod_id, quantity)
-        cur.execute('INSERT INTO cart VALUES (%s, %s, %s)', [cust_id, prod_id, quantity])
-        return render_template('cart.html')
+def add_product(cust_id, prod_id):
+    quantity = request.form['quantity']
+    cur.execute('INSERT INTO cart VALUES (%s, %s, %s)', [cust_id, prod_id, quantity])
+    return render_template('cart.html')
         
 
 # Searching for a product using product brand
