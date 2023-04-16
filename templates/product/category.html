@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Product Search Results</title>
-</head>
-<body>
-    <h1>Product Search Results for {{ context.brand }}</h1>
-
-    <table>
+{% extends "base.html" %}
+{% block content %}
+    <h3>Product Search Results for {{ context.category }}</h3>
+    <table class="table">
         <thead>
             <tr>
                 {% for attr in context.attributes %}
@@ -16,15 +10,13 @@
             </tr>
         </thead>
         <tbody>
-            {% for prod in context.products %}
+            {% for product in context.products %}
             <tr>
-                {% for val in prod.values() %}
+                {% for val in product %}
                 <td>{{ val }}</td>
                 {% endfor %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
-</body>
-</html>
+{% endblock %}

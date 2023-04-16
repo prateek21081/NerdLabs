@@ -1,20 +1,52 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Product Information</title>
-</head>
-<body>
-    <h1>Product Information</h1>
+{% extends "base.html" %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="img-thumbnail">
+      </div>
+      <div class="col">
+        <div class="fw-bold fs-1">{{context.product['prod_name']}}</div>
+        <div class="fs-5 fst-italic">by {{context.product['brand']}}</div>
+        <div class="fs-5">Model number: {{context.product['model']}}</div>
+        <div class="fw-bold fs-1">
+          Rs. {{context.product['price']}}/-
+          <span class="badge fst-italic fs-4">{{context.product['discount']}}% Off!</span>
+        </div>
+        <div class="fs-2">Product Information</div>
+        <table class="table table-dark table-striped-columns">
+            {% for attr in context.meta %}
+            <tr>
+                <td><b>{{ attr }}</b></td>
+                <td>{{ context.meta[attr] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+      </div>
+    </div>
 
-    <table>
-        {% for attr in context.product %}
-        <tr>
-            <td>{{ attr }}</td>
-            <td>{{ context.product[attr] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <!-- create a form that takes in the prod_id -->
+    <!-- and sends it to the add_to_cart_handler -->
 
-</body>
-</html>
+    <form method = "POST"> 
+      <!-- create a form for quantity -->
+      <div class="form-group">
+        <label for="quantity">Quantity</label>
+        <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="10" value="1">
+      <button type="submit" class="btn btn-primary">Add to Cart</button>
+    </form>
+
+    <div class="row">
+      <div class="fs-2">Reviews</div>
+        <ul class="list-group">
+            {% for review in context.review %}
+            <li class="list-group-item">
+              <div class="fs-2">{% for i in range(review['star']) %} * {% endfor %}</div>
+              <div class="fw-bold fs-5">{{ review['review'] }}</div>
+              <div class="fw-italic">by customer {{ review['cust_id'] }}</div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+  </div>
+{% endblock %}
