@@ -2,6 +2,8 @@
 1. Connect Add Product so that it can add products to the database
 2. Fix Update Product so that it can update products in the database and also delete button alongside
 3. Fix the Add to Cart button so that it actually adds to cart
+4. Total not working
+5. Confirm Link nahi hora :(
 '''
 
 
@@ -25,8 +27,8 @@ app.secret_key = b's3cr3t_k3y'
 db = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
-    user = "admin",
-    password = "pass"
+    user = "root",
+    password = "rootpassword$12"
 )
 db.autocommit = True
 cur = db.cursor()
@@ -153,6 +155,40 @@ def admin():
     return render_template('admin.html', context=res)
 
 
+@app.route('/cart', methods=['GET'])
+@token_required
+def view_cart(cust_id):
+    # Query the database for items in the cart for the customer
+    cur.execute('SELECT * FROM cart WHERE cart.cust_id = %s', [cust_id])
+    # get product price
+    keys = cur.column_names
+    values = cur.fetchall()
+    cart = list()
+    for val in values:
+        cart.append(dict(zip(keys, val)))
+    for item in cart:
+        cur.execute('SELECT price FROM product WHERE product.prod_id = %s', [item['prod_id']])
+        item['price'] = cur.fetchone()[0]
+    # print(cart) 
+    return render_template('customer/cart.html', context=cart)
+
+
+@app.route('/invoice', methods=['GET'])
+@token_required
+def view_invoice(cust_id):
+    # Query the database for items in the cart for the customer
+    cur.execute('SELECT * FROM cart WHERE cart.cust_id = %s', [cust_id])
+    # get product price
+    keys = cur.column_names
+    values = cur.fetchall()
+    cart = list()
+    for val in values:
+        cart.append(dict(zip(keys, val)))
+    for item in cart:
+        cur.execute('SELECT price FROM product WHERE product.prod_id = %s', [item['prod_id']])
+        item['price'] = cur.fetchone()[0]
+    # print(cart) 
+    return render_template('customer/invoice.html', context=cart)
 
 # <---------------------------------------PRODUCTS-------------------------------------------------------------->
 
@@ -183,10 +219,12 @@ def get_product(prod_id):
     
 @app.route('/product/id/<prod_id>', methods=['POST'])
 @token_required
-def add_product(cust_id, prod_id):
-    quantity = request.form['quantity']
-    cur.execute('INSERT INTO cart VALUES (%s, %s, %s)', [cust_id, prod_id, quantity])
-    return render_template('cart.html')
+def add_product_post(cust_id, prod_id):
+    if request.method == 'POST':
+        quantity = request.form['quantity']
+        # print(cust_id, prod_id, quantity)
+        cur.execute('INSERT INTO cart VALUES (%s, %s, %s)', [cust_id, prod_id, quantity])
+        return render_template('customer/cart.html')
         
 
 # Searching for a product using product brand
