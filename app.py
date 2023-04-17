@@ -44,6 +44,11 @@ def token_required(func):
         return func(cust_id, *args, **kwargs)
     return decorated
 
+def prod_category_by_id(prod_id):
+    prod_type = ['motherboard', 'gpu', 'processor', 'ram', 'storage', 'psu', 'cabinet']
+    category = prod_type[int(prod_id)//100]
+    return category
+
 @app.route('/userid')
 @token_required
 def get_custid(cust_id):
@@ -60,8 +65,6 @@ def root():
 
     # print(res)
     return render_template('homepage.html', context=res)
-
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -129,7 +132,7 @@ def get_data():
     return render_template('data.html', context=res)
 
 @app.route('/admin/addproduct', methods=['GET', 'POST'])
-def admin():
+def admin_addproduct():
     if request.method == 'POST':
         try:
             rf = request.form.keys()
@@ -160,15 +163,23 @@ def admin():
         res = None
     return render_template('admin/addproduct.html', context=res)
 
+@app.route('/admin/deleteproduct', methods=['GET', 'POST'])
+def admin_deleteproduct():
+    res = {
+        "message": None,
+    }
+    if request.method == 'POST':
+        prod_id = request.form['prod_id']
+    return render_template('admin/deleteproduct.html', context=res)        
+
+
 
 @app.route('/cart', methods=['GET', 'POST'])
 @token_required
 def view_cart(cust_id):
     if request.method == 'POST':
-                cur.execute('DELETE FROM cart WHERE cart.cust_id = %s AND cart.prod_id = %s', [cust_id, request.form['prod_id']])
-    # Query the database for items in the cart for the customer
+        cur.execute('DELETE FROM cart WHERE cart.cust_id = %s AND cart.prod_id = %s', [cust_id, request.form['prod_id']])
     cur.execute('SELECT * FROM cart WHERE cart.cust_id = %s', [cust_id])
-    # get product price
     keys = cur.column_names
     values = cur.fetchall()
     cart = list()
@@ -177,7 +188,6 @@ def view_cart(cust_id):
     for item in cart:
         cur.execute('SELECT price FROM product WHERE product.prod_id = %s', [item['prod_id']])
         item['price'] = cur.fetchone()[0]
-    # print(cart) 
     return render_template('customer/cart.html', context=cart)
 
 @app.route('/invoice', methods=['GET', 'POST'])
@@ -220,8 +230,7 @@ def viewcart(cust_id):
 @app.route('/product/id/<prod_id>', methods=['GET'])
 def get_product(prod_id):
     if request.method == 'GET':
-        prod_type = ['motherboard', 'gpu', 'processor', 'ram', 'storage', 'psu', 'cabinet']
-        category = prod_type[int(prod_id)//100]
+        category = prod_category_by_id(prod_id)
         res = dict()
         cur.execute(f'SELECT * FROM product WHERE product.prod_id = %s', [prod_id])
         keys = cur.column_names
