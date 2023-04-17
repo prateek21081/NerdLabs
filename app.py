@@ -3,7 +3,6 @@
 
 '''
 
-
 from flask import (
     Flask,
     request,
@@ -24,8 +23,8 @@ app.secret_key = b's3cr3t_k3y'
 db = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
-    user = "root",
-    password = "rootpassword$12"
+    user = "admin",
+    password = "pass"
 )
 db.autocommit = True
 cur = db.cursor()
@@ -159,7 +158,7 @@ def admin():
             }
     else:
         res = None
-    return render_template('admin.html', context=res)
+    return render_template('admin/addproduct.html', context=res)
 
 
 @app.route('/cart', methods=['GET', 'POST'])
