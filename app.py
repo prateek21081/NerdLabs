@@ -1,9 +1,6 @@
 '''
-1. Connect Add Product so that it can add products to the database
-2. Fix Update Product so that it can update products in the database and also delete button alongside
-3. Fix the Add to Cart button so that it actually adds to cart
-4. Total not working
-5. Confirm Link nahi hora :(
+1. Transactions pending.
+
 '''
 
 
@@ -53,9 +50,19 @@ def token_required(func):
 def get_custid(cust_id):
     return make_response(jsonify({'cust_id': cust_id}), 200)
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def root():
-    return render_template('homepage.html')
+    cur.execute('SELECT * FROM product WHERE product.prod_id <= 6')
+    keys = cur.column_names
+    values = cur.fetchall()
+    res = list()
+    for val in values:
+        res.append(dict(zip(keys, val)))
+
+    # print(res)
+    return render_template('homepage.html', context=res)
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -155,9 +162,11 @@ def admin():
     return render_template('admin.html', context=res)
 
 
-@app.route('/cart', methods=['GET'])
+@app.route('/cart', methods=['GET', 'POST'])
 @token_required
 def view_cart(cust_id):
+    if request.method == 'POST':
+                cur.execute('DELETE FROM cart WHERE cart.cust_id = %s AND cart.prod_id = %s', [cust_id, request.form['prod_id']])
     # Query the database for items in the cart for the customer
     cur.execute('SELECT * FROM cart WHERE cart.cust_id = %s', [cust_id])
     # get product price
@@ -172,10 +181,9 @@ def view_cart(cust_id):
     # print(cart) 
     return render_template('customer/cart.html', context=cart)
 
-
-@app.route('/invoice', methods=['GET'])
+@app.route('/invoice', methods=['GET', 'POST'])
 @token_required
-def view_invoice(cust_id):
+def viewcart(cust_id):
     # Query the database for items in the cart for the customer
     cur.execute('SELECT * FROM cart WHERE cart.cust_id = %s', [cust_id])
     # get product price
@@ -188,7 +196,24 @@ def view_invoice(cust_id):
         cur.execute('SELECT price FROM product WHERE product.prod_id = %s', [item['prod_id']])
         item['price'] = cur.fetchone()[0]
     # print(cart) 
-    return render_template('customer/invoice.html', context=cart)
+
+
+    # Query and display all the inv_id for the customer using cust_id
+    cur.execute('SELECT inv_id FROM invoice WHERE invoice.cust_id = %s', [cust_id])
+    keys = cur.column_names
+    values = cur.fetchall()
+    inv_id = list()
+    for val in values:
+        inv_id.append(dict(zip(keys, val)))
+    # print(inv_id)
+    
+    # for customer add customer details to the invoice
+    cur.execute('SELECT * FROM customer WHERE customer.cust_id = %s', [cust_id])
+    keys = cur.column_names
+    values = cur.fetchone()
+    customer = dict(zip(keys, values))
+    # print(customer)
+    return render_template('customer/invoice.html', context1=cart, context2 = customer)
 
 # <---------------------------------------PRODUCTS-------------------------------------------------------------->
 
@@ -222,10 +247,20 @@ def get_product(prod_id):
 def add_product_post(cust_id, prod_id):
     if request.method == 'POST':
         quantity = request.form['quantity']
-        # print(cust_id, prod_id, quantity)
         cur.execute('INSERT INTO cart VALUES (%s, %s, %s)', [cust_id, prod_id, quantity])
-        return render_template('customer/cart.html')
+        cur.execute('SELECT * FROM cart WHERE cart.cust_id = %s', [cust_id])
+        # get product price
+        keys = cur.column_names
+        values = cur.fetchall()
+        cart = list()
+        for val in values:
+            cart.append(dict(zip(keys, val)))
+        for item in cart:
+            cur.execute('SELECT price FROM product WHERE product.prod_id = %s', [item['prod_id']])
+            item['price'] = cur.fetchone()[0]
+        # print(cust_id, prod_id, quantity)
         
+        return redirect(url_for('view_cart', cust_id=cust_id))
 
 # Searching for a product using product brand
 @app.route('/product/brand/<brand>')

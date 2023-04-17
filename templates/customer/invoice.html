@@ -1,60 +1,71 @@
+<!-- 
+  PENDING:
+  1. Major issue: can't display the invoice details
+  2. there are multiple invoice entries for a single customer
+  3. Fix PurchaseDate and Invoice ID
+  4. Fix Total and stuff
+-->
+
+
 
 {% extends "base.html" %}
 {% set total = 0 %}
 {% block content %}
 
+<!-- {{context2}} -->
   <div class="container py-5">
+    <h1>Invoice</h1>
     <div class="row">
       <div class="col-md-6">
-        <h1>Invoice</h1>
       </div>
-      <div class="col-md-6 text-end">
-        <!-- print current date -->
-        <h5>Date: 16-04-2023</h5>
-        <h5>Invoice Number: {{ invoice_number }}</h5>
+      <form method="GET">
+        <div class="col-md-6 text-end">
+          <h5>Invoice ID: </h5>
+          <h5>Date:</h5>
+        </div>
       </div>
-    </div>
+      <hr>
+        <div class="row mt-4">
+          <div class="col-md-6">
+            <h5>Bill To:</h5>
+            <p>{{ context2['first_name'] }} {{ context2['last_name'] }}</p>
+          </div>
+          <div class="col-md-6 text-end">
+            <h5>Ship To:</h5>
+            <p>{{ context2['addr_loc'] }}</p>
+            <p>{{ context2['addr_city'] }} {{ context2['addr_pin'] }}</p>
+          </div>
+        </div>
+
+
     <hr>
-    <div class="row mt-4">
-      <div class="col-md-6">
-        <h5>Bill To:</h5>
-        <p>{{ customer_name }}</p>
-        <p>{{ customer_address }}</p>
-        <p>{{ customer_city }}, {{ customer_state }} {{ customer_zip }}</p>
-      </div>
-      <div class="col-md-6 text-end">
-        <h5>Ship To:</h5>
-        <p>{{ shipping_name }}</p>
-        <p>{{ shipping_address }}</p>
-        <p>{{ shipping_city }}, {{ shipping_state }} {{ shipping_zip }}</p>
-      </div>
-    </div>
-    <hr>
-    <div class="row mt-4">
-      <div class="col-md-12">
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Product ID</th>
-              <th>Price</th>
-              <th>Quantity</th>
-              <th>Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in context %}
-            <tr>
-              <td>{{ item.prod_id }}</td>
-              <td>{{ item.price }}</td>
-              <td>{{ item.quantity }}</td>
-              <td>{{ (item.price) *(item.quantity) }}</td>
-              {% set total = total + ((item.price) * (item.quantity)) %}
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+
+        <div class="row mt-4">
+          <div class="col-md-12">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Product ID</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in context1 %}
+                <tr>
+                  <td>{{ item.prod_id }}</td>
+                  <td>{{ item.price }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ (item.price) *(item.quantity) }}</td>
+                  {% set total = total + ((item.price) * (item.quantity)) %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </form>
     <div class="row mt-4">
       <div class="col-md-12 text-end">
         <h5>Subtotal: {{ total }}</h5>

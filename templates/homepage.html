@@ -1,80 +1,99 @@
+<!-- 
+  Pending:
+  1. Route to the product page if title is clicked.
+  
+
+-->
+
+
 {% extends "base.html" %}
 {% block content %}
 <div style = "margin-top: 20px;">
 <span class="align-middle">
   <p class="text-center fs-2 fw-bold">Welcome to NerdLabs!</p>
   <p class="text-center fs-4">This is a website for all your nerdy needs!</p>
+  <hr style="border: 1px solid black;">
 </span>
-<div class = "cards" style="margin-top: 100px; width: 70%; text-align: center; margin-left: 240px;">
+<br>
+<div class="text-center">
+  <h3 class="display-7">Featured Products</h3>
+</div>
 
+
+<div class = "cards" style="margin-top: 100px; width: 70%; text-align: center; margin-left: 240px;">
   <div class="row row-cols-1 row-cols-md-3 g-4">
     <div class="col">
       <div class="card">
-        <img src="..." class="card-img-top" alt="...">
+        <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="card-img-top" alt="...">
         <div class="card-body">
-          <h5 class="card-title">NAX6NVH8F7</h5>
-          <p class="card-text"><b>Model</b>: NAX6NVH8F7</p>
-          <p class="card-text"><b>Brand</b>: Dell</p>
-          <p class="card-text"><b>MRP</b>: <i>3878</i></p>
+          <h5 class="card-title">{{context[0].prod_name}}</h5>
+          <p class="card-text"><b>Model</b>: {{context[0].model}}</p>
+          <p class="card-text"><b>Brand</b>: {{context[0].brand}}</p>
+          <p class="card-text"><b>MRP</b>: <i>{{context[0].mrp}}</i></p>
         </div>
       </div>
-    </div>
+      </div>
     <div class="col">
       <div class="card">
-        <img src="..." class="card-img-top" alt="...">
+        <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="card-img-top" alt="...">
         <div class="card-body">
-          <h5 class="card-title">NAX6NVH8F7</h5>
-          <p class="card-text"><b>Model</b>: NAX6NVH8F7</p>
-          <p class="card-text"><b>Brand</b>: Dell</p>
-          <p class="card-text"><b>MRP</b>: <i>3878</i></p>
+          <h5 class="card-title">{{context[1].prod_name}}</h5>
+          <p class="card-text"><b>Model</b>: {{context[1].model}}</p>
+          <p class="card-text"><b>Brand</b>: {{context[1].brand}}</p>
+          <p class="card-text"><b>MRP</b>: <i>{{context[1].mrp}}</i></p>
         </div>
-    </div>
-  </div>
-  <div class="col">
-    <div class="card">
-      <img src="..." class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">NAX6NVH8F7</h5>
-          <p class="card-text"><b>Model</b>: NAX6NVH8F7</p>
-          <p class="card-text"><b>Brand</b>: Dell</p>
-          <p class="card-text"><b>MRP</b>: <i>3878</i></p>
+      </div>
+      </div>
+    <div class="col">
+      <div class="card">
+        <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">{{context[2].prod_name}}</h5>
+          <p class="card-text"><b>Model</b>: {{context[2].model}}</p>
+          <p class="card-text"><b>Brand</b>: {{context[2].brand}}</p>
+          <p class="card-text"><b>MRP</b>: <i>{{context[2].mrp}}</i></p>
+        </div>
+      </div>
+      </div>
+    <div class="col">
+      <div class="card">
+        <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">{{context[3].prod_name}}</h5>
+          <p class="card-text"><b>Model</b>: {{context[3].model}}</p>
+          <p class="card-text"><b>Brand</b>: {{context[3].brand}}</p>
+          <p class="card-text"><b>MRP</b>: <i>{{context[3].mrp}}</i></p>
+        </div>
+      </div>
+      </div>
+    <div class="col">
+      <div class="card">
+        <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">{{context[4].prod_name}}</h5>
+          <p class="card-text"><b>Model</b>: {{context[4].model}}</p>
+          <p class="card-text"><b>Brand</b>: {{context[4].brand}}</p>
+          <p class="card-text"><b>MRP</b>: <i>{{context[4].mrp}}</i></p>
+        </div>
+      </div>
+      </div>
+    <div class="col">
+      <div class="card">
+        <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">{{context[5].prod_name}}</h5>
+          <p class="card-text"><b>Model</b>: {{context[5].model}}</p>
+          <p class="card-text"><b>Brand</b>: {{context[5].brand}}</p>
+          <p class="card-text"><b>MRP</b>: <i>{{context[5].mrp}}</i></p>
+        </div>
+      </div>
       </div>
     </div>
-  </div>
-  <div class="col">
-    <div class="card">
-      <img src="..." class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">NAX6NVH8F7</h5>
-          <p class="card-text"><b>Model</b>: NAX6NVH8F7</p>
-          <p class="card-text"><b>Brand</b>: Dell</p>
-          <p class="card-text"><b>MRP</b>: <i>3878</i></p>
-      </div>
-    </div>
-  </div>
-  <div class="col">
-    <div class="card">
-      <img src="..." class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">NAX6NVH8F7</h5>
-          <p class="card-text"><b>Model</b>: NAX6NVH8F7</p>
-          <p class="card-text"><b>Brand</b>: Dell</p>
-          <p class="card-text"><b>MRP</b>: <i>3878</i></p>
-      </div>
-    </div>
-  </div>
-  <div class="col">
-    <div class="card">
-      <img src="..." class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">NAX6NVH8F7</h5>
-          <p class="card-text"><b>Model</b>: NAX6NVH8F7</p>
-          <p class="card-text"><b>Brand</b>: Dell</p>
-          <p class="card-text"><b>MRP</b>: <i>3878</i></p>
-      </div>
-    </div>
-  </div>
 </div>
 </div>
+
+<div class="footer" style="margin-top: 100px;">
+  <p class="text-center">NerdLabs &copy; 2023</p>
 </div>
+
 {% endblock %}

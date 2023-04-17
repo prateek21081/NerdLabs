@@ -1,6 +1,13 @@
+<!-- 
+    Pending:
+    1. Add "/product/id/<prod_id> to the search bar using product_name"
+    2. 
+-->
+
+
 {% extends "base.html" %}
 {% block content %}
-<!-- create two variables screenwidth and screenheight -->
+
 {% set screenwidth = 500 %}
 {% set screenheight = 500 %}
 
@@ -17,7 +24,7 @@
         {% if context.message %}
             <p>{{ context.message }}</p>
         {% else %}
-        <h3>Data for {{ context.title }}</h3>
+        <h3>Data for:  {{ context.title }}</h3>
         <table class="table">
             <thead>
                 <tr>

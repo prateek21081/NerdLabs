@@ -1,3 +1,7 @@
+<!--  
+    1. Fix Total
+-->
+
 {% extends "base.html" %}
 {% block content %}
 
@@ -17,8 +21,7 @@
       </tr>
     </thead>
 
-    <!-- [{'cust_id': 1, 'prod_id': 11, 'quantity': 5, 'price': 1428}, {'cust_id': 1, 'prod_id': 12, 'quantity': 5, 'price': 1601}, {'cust_id': 1, 'prod_id': 13, 'quantity': 5, 'price': 47}, {'cust_id': 1, 'prod_id': 14, 'quantity': 5, 'price': 9145}, {'cust_id': 1, 'prod_id': 15, 'quantity': 5, 'price': 180}, {'cust_id': 1, 'prod_id': 16, 'quantity': 4, 'price': 4882}, {'cust_id': 1, 'prod_id': 17, 'quantity': 6, 'price': 8963}, {'cust_id': 1, 'prod_id': 24, 'quantity': 5, 'price': 1342}, {'cust_id': 1, 'prod_id': 499, 'quantity': 2, 'price': 8886}] -->
-
+    
     <tbody>
         {% for item in context %}
         <tr>
@@ -27,6 +30,12 @@
             <td>{{ item.price }}</td>
             <td>{{ (item.price) *(item.quantity) }}</td>
             {% set total = total + ((item.price) * (item.quantity)) %}
+            <td>
+                <form method="post">
+                    <input type="hidden" name="prod_id" value="{{ item.prod_id }}" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
@@ -37,7 +46,7 @@
 <h5 class="text-center mt-5">Total: {{ total }}</h5>
 
 <!-- create a buy now button -->
-<form>
+<form action = "/invoice">
     <div class="text-center">
         <button type="submit" class="btn btn-primary" style="margin-bottom: 20px;">Checkout!</button>
     </div>
