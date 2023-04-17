@@ -56,7 +56,7 @@ def get_custid(cust_id):
 
 @app.route('/', methods=['GET'])
 def root():
-    cur.execute('SELECT * FROM product WHERE product.prod_id <= 6')
+    cur.execute('SELECT * FROM product WHERE product.prod_id >= 40 limit 10')
     keys = cur.column_names
     values = cur.fetchall()
     res = list()
@@ -170,6 +170,14 @@ def admin_deleteproduct():
     }
     if request.method == 'POST':
         prod_id = request.form['prod_id']
+        category = prod_category_by_id(prod_id)
+        cur.execute("SET FOREIGN_KEY_CHECKS=0")
+        try:
+            cur.execute(f"DELETE FROM {category} where prod_id=%s", [prod_id])
+            cur.execute(f"DELETE FROM product where prod_id=%s", [prod_id])
+        except mysql.connector.Error as err:
+            res['message'] = err
+        cur.execute("SET FOREIGN_KEY_CHECKS=1")
     return render_template('admin/deleteproduct.html', context=res)        
 
 
