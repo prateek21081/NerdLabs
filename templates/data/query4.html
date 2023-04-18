@@ -1,0 +1,79 @@
+
+
+{% extends "base.html" %}
+{% block content %}
+
+{% set screenwidth = 500 %}
+{% set screenheight = 500 %}
+
+    <form method="post" class="row g-3">
+      <div class="col-auto">
+        <label for="data" class="visually-hidden">Data</label>
+        <input type="text" name="data" class="form-control" id="inputPassword2" placeholder="Search For.." required style="text-align:center; width: 500px; margin-top: 50px; margin-left: 350px;">
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-3" style = "margin-top: 50px; margin-left: 15px;">Submit</button>
+      </div>
+    </form>
+
+    <table class="table" style="width:50%; margin:auto;">
+        <tr>
+
+          <th>Product Type</th>
+          <th>Total Products</th>
+          <th>Total Value</th>
+
+        </tr>
+
+            <tr>
+    
+                <td>{{ context[0]['product_type'] }}</td>
+                <td>{{ context[0]['total_products'] }}</td>
+                <td>{{ context[0]['total_value'] }}</td>
+    
+            </tr>
+            <tr>
+    
+                <td>{{ context[1]['product_type'] }}</td>
+                <td>{{ context[1]['total_products'] }}</td>
+                <td>{{ context[1]['total_value'] }}</td>
+    
+            </tr>
+            <tr>
+    
+                <td>{{ context[2]['product_type'] }}</td>
+                <td>{{ context[2]['total_products'] }}</td>
+                <td>{{ context[2]['total_value'] }}</td>
+    
+            </tr>
+            <tr>
+    
+                <td>{{ context[3]['product_type'] }}</td>
+                <td>{{ context[3]['total_products'] }}</td>
+                <td>{{ context[3]['total_value'] }}</td>
+    
+            </tr>
+            <tr>
+    
+                <td>{{ context[4]['product_type'] }}</td>
+                <td>{{ context[4]['total_products'] }}</td>
+                <td>{{ context[4]['total_value'] }}</td>
+    
+            </tr>
+            <tr>
+    
+                <td>{{ context[5]['product_type'] }}</td>
+                <td>{{ context[5]['total_products'] }}</td>
+                <td>{{ context[5]['total_value'] }}</td>
+    
+            </tr>
+            <tr>
+    
+                <td>{{ context[6]['product_type'] }}</td>
+                <td>{{ context[6]['total_products'] }}</td>
+                <td>{{ context[6]['total_value'] }}</td>
+    
+            </tr>
+
+    </table>
+{% endblock %}

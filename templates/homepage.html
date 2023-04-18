@@ -1,11 +1,3 @@
-<!-- 
-  Pending:
-  1. Route to the product page if title is clicked.
-  
-
--->
-
-
 {% extends "base.html" %}
 {% block content %}
 <div style = "margin-top: 20px;">
@@ -26,8 +18,9 @@
       <div class="card">
         <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="card-img-top" alt="...">
         <div class="card-body">
-          <h5 class="card-title">{{context[0].prod_name}}</h5>
-          <p class="card-text"><b>Model</b>: {{context[0].model}}</p>
+          <form action="/product/id/{{context[0].prod_id}}" method="GET">
+            <button type="submit" class="btn btn-link"><p><b>Model</b>: {{context[0].model}}</p></button>
+          </form>
           <p class="card-text"><b>Brand</b>: {{context[0].brand}}</p>
           <p class="card-text"><b>MRP</b>: <i>{{context[0].mrp}}</i></p>
         </div>
@@ -37,8 +30,9 @@
       <div class="card">
         <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="card-img-top" alt="...">
         <div class="card-body">
-          <h5 class="card-title">{{context[1].prod_name}}</h5>
-          <p class="card-text"><b>Model</b>: {{context[1].model}}</p>
+          <form action="/product/id/{{context[1].prod_id}}" method="GET">
+            <button type="submit" class="btn btn-link"><p><b>Model</b>: {{context[1].model}}</p></button>
+          </form>
           <p class="card-text"><b>Brand</b>: {{context[1].brand}}</p>
           <p class="card-text"><b>MRP</b>: <i>{{context[1].mrp}}</i></p>
         </div>
@@ -48,8 +42,9 @@
       <div class="card">
         <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="card-img-top" alt="...">
         <div class="card-body">
-          <h5 class="card-title">{{context[2].prod_name}}</h5>
-          <p class="card-text"><b>Model</b>: {{context[2].model}}</p>
+          <form action="/product/id/{{context[2].prod_id}}" method="GET">
+            <button type="submit" class="btn btn-link"><p><b>Model</b>: {{context[2].model}}</p></button>
+          </form>
           <p class="card-text"><b>Brand</b>: {{context[2].brand}}</p>
           <p class="card-text"><b>MRP</b>: <i>{{context[2].mrp}}</i></p>
         </div>
@@ -59,8 +54,9 @@
       <div class="card">
         <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="card-img-top" alt="...">
         <div class="card-body">
-          <h5 class="card-title">{{context[3].prod_name}}</h5>
-          <p class="card-text"><b>Model</b>: {{context[3].model}}</p>
+          <form action="/product/id/{{context[3].prod_id}}" method="GET">
+            <button type="submit" class="btn btn-link"><p><b>Model</b>: {{context[3].model}}</p></button>
+          </form>
           <p class="card-text"><b>Brand</b>: {{context[3].brand}}</p>
           <p class="card-text"><b>MRP</b>: <i>{{context[3].mrp}}</i></p>
         </div>
@@ -70,8 +66,9 @@
       <div class="card">
         <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="card-img-top" alt="...">
         <div class="card-body">
-          <h5 class="card-title">{{context[4].prod_name}}</h5>
-          <p class="card-text"><b>Model</b>: {{context[4].model}}</p>
+          <form action="/product/id/{{context[4].prod_id}}" method="GET">
+            <button type="submit" class="btn btn-link"><p><b>Model</b>: {{context[4].model}}</p></button>
+          </form>
           <p class="card-text"><b>Brand</b>: {{context[4].brand}}</p>
           <p class="card-text"><b>MRP</b>: <i>{{context[4].mrp}}</i></p>
         </div>
@@ -81,8 +78,9 @@
       <div class="card">
         <img src="https://www.lechambron.com/wp-content/plugins/builder-mosaic/assets/images/image-placeholder.jpg" class="card-img-top" alt="...">
         <div class="card-body">
-          <h5 class="card-title">{{context[5].prod_name}}</h5>
-          <p class="card-text"><b>Model</b>: {{context[5].model}}</p>
+          <form action="/product/id/{{context[5].prod_id}}" method="GET">
+            <button type="submit" class="btn btn-link"><p><b>Model</b>: {{context[5].model}}</p></button>
+          </form>
           <p class="card-text"><b>Brand</b>: {{context[5].brand}}</p>
           <p class="card-text"><b>MRP</b>: <i>{{context[5].mrp}}</i></p>
         </div>

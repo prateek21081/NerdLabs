@@ -23,8 +23,8 @@ app.secret_key = b's3cr3t_k3y'
 db = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
-    user = "admin",
-    password = "pass"
+    user = "root",
+    password = "rootpassword$12"
 )
 db.autocommit = True
 cur = db.cursor()
@@ -187,6 +187,14 @@ def admin_deleteproduct():
 def view_cart(cust_id):
     if request.method == 'POST':
         cur.execute('DELETE FROM cart WHERE cart.cust_id = %s AND cart.prod_id = %s', [cust_id, request.form['prod_id']])
+        cur.execute('drop trigger if exists update_quantity_on_remove;')
+        cur.execute('''CREATE TRIGGER update_quantity_on_remove
+                        AFTER DELETE ON cart FOR EACH ROW
+                        BEGIN
+                            update product
+                            set quantity = quantity + OLD.quantity
+                            where prod_id = OLD.prod_id;
+                        END;''')
     cur.execute('SELECT * FROM cart WHERE cart.cust_id = %s', [cust_id])
     keys = cur.column_names
     values = cur.fetchall()
@@ -203,7 +211,6 @@ def view_cart(cust_id):
 def viewcart(cust_id):
     # Query the database for items in the cart for the customer
     cur.execute('SELECT * FROM cart WHERE cart.cust_id = %s', [cust_id])
-    # get product price
     keys = cur.column_names
     values = cur.fetchall()
     cart = list()
@@ -212,17 +219,11 @@ def viewcart(cust_id):
     for item in cart:
         cur.execute('SELECT price FROM product WHERE product.prod_id = %s', [item['prod_id']])
         item['price'] = cur.fetchone()[0]
-    # print(cart) 
-
 
     # Query and display all the inv_id for the customer using cust_id
-    cur.execute('SELECT inv_id FROM invoice WHERE invoice.cust_id = %s', [cust_id])
-    keys = cur.column_names
-    values = cur.fetchall()
-    inv_id = list()
-    for val in values:
-        inv_id.append(dict(zip(keys, val)))
-    # print(inv_id)
+    cur.execute('SELECT inv_id, delivery_time FROM invoice WHERE invoice.cust_id = %s', [cust_id])
+    inv_id = cur.fetchall()
+    print(inv_id)
     
     # for customer add customer details to the invoice
     cur.execute('SELECT * FROM customer WHERE customer.cust_id = %s', [cust_id])
@@ -230,7 +231,99 @@ def viewcart(cust_id):
     values = cur.fetchone()
     customer = dict(zip(keys, values))
     # print(customer)
-    return render_template('customer/invoice.html', context1=cart, context2 = customer)
+    return render_template('customer/invoice.html', context1=cart, context2 = customer, context3 = inv_id)
+
+
+@app.route('/data/query1', methods=['GET', 'POST'])
+@token_required
+def query1(cust_id):
+    if request.method == 'POST':
+            # Execute query 1
+            cur.execute('SELECT cart.cust_id, \
+            MAX(CASE WHEN cart.prod_id BETWEEN 1 AND 100 THEN cart.quantity ELSE 0 END) AS Motherboard, \
+            MAX(CASE WHEN cart.prod_id BETWEEN 101 AND 200 THEN cart.quantity ELSE 0 END) AS GPU, \
+            MAX(CASE WHEN cart.prod_id BETWEEN 201 AND 300 THEN cart.quantity ELSE 0 END) AS Processor, \
+            MAX(CASE WHEN cart.prod_id BETWEEN 301 AND 400 THEN cart.quantity ELSE 0 END) AS RAM, \
+            MAX(CASE WHEN cart.prod_id BETWEEN 401 AND 500 THEN cart.quantity ELSE 0 END) AS PSU, \
+            MAX(CASE WHEN cart.prod_id BETWEEN 501 AND 600 THEN cart.quantity ELSE 0 END) AS Cabinet, \
+            MAX(CASE WHEN cart.prod_id BETWEEN 601 AND 700 THEN cart.quantity ELSE 0 END) AS Storage \
+            FROM cart \
+            WHERE cart.cust_id = %s \
+            GROUP BY cart.cust_id \
+            ORDER BY cart.cust_id', (cust_id,))
+            keys = cur.column_names
+            values = cur.fetchall()
+            res = list()
+            for val in values:
+                res.append(dict(zip(keys, val)))
+            # print(res)
+            return render_template('data/query1.html', context=res)
+
+@app.route('/data/query2', methods=['GET', 'POST'])
+@token_required
+def query2(cust_id):
+    if request.method == 'POST':
+        # Execute query 2
+        cur.execute('SELECT DATE(invoice.purchase_time) as date, \
+            SUM(invoice.quantity) as products_sold, \
+            SUM(invoice.quantity * product.price) AS revenue \
+            FROM invoice, product \
+            WHERE invoice.prod_id = product.prod_id \
+            GROUP BY date WITH ROLLUP')
+        keys = cur.column_names
+        values = cur.fetchall()
+        res = list()
+        for val in values:
+            res.append(dict(zip(keys, val)))
+        # print(res)
+        return render_template('data/query2.html', context=res)
+    
+
+@app.route('/data/query3', methods=['GET', 'POST'])
+@token_required
+def query3(cust_id):
+    if request.method == 'POST':
+        cur.execute('SELECT COALESCE(DATE(invoice.purchase_time), "2023-02-10") as purchase_date, \
+        COALESCE(invoice.cust_id, "2") as cust_id, \
+        COALESCE(SUM(invoice.quantity), 0) as purchase_qty \
+        FROM invoice \
+        GROUP BY purchase_date, cust_id WITH ROLLUP;')
+        keys = cur.column_names
+        values = cur.fetchall()
+        res = list()
+        for val in values:
+            res.append(dict(zip(keys, val)))
+        # print(res)
+        return render_template('data/query3.html', context=res)
+    
+    
+@app.route('/data/query4', methods=['GET', 'POST'])
+@token_required
+def query4(cust_id):
+    if request.method == 'POST':
+        cur.execute('SELECT \
+            CASE \
+                WHEN prod_id BETWEEN   1 AND 100 THEN "Motherboard" \
+                WHEN prod_id BETWEEN 101 AND 200 THEN "GPU" \
+                WHEN prod_id BETWEEN 201 AND 300 THEN "Processor" \
+                WHEN prod_id BETWEEN 301 AND 400 THEN "RAM" \
+                WHEN prod_id BETWEEN 401 AND 500 THEN "PSU" \
+                WHEN prod_id BETWEEN 501 AND 600 THEN "Cabinet" \
+                WHEN prod_id BETWEEN 601 AND 700 THEN "Storage" \
+            ELSE "Misc" \
+            END AS product_type, \
+            SUM(quantity) as total_products, \
+            SUM(quantity * price) as total_value \
+            FROM product \
+            GROUP BY product_type WITH ROLLUP;')
+        
+        keys = cur.column_names
+        values = cur.fetchall()
+        res = list()
+        for val in values:
+            res.append(dict(zip(keys, val)))
+        # print(res)
+        return render_template('data/query4.html', context=res)
 
 # <---------------------------------------PRODUCTS-------------------------------------------------------------->
 
@@ -276,7 +369,19 @@ def add_product_post(cust_id, prod_id):
             item['price'] = cur.fetchone()[0]
         # print(cust_id, prod_id, quantity)
         
+        # Add trigger to update quantity on adding to cart
+        cur.execute('DROP TRIGGER IF EXISTS update_quantity_on_add;')
+        cur.execute('''CREATE TRIGGER update_quantity_on_add \
+                        AFTER INSERT ON cart \
+                        FOR EACH ROW \
+                        BEGIN \
+                            UPDATE product \
+                            SET quantity = quantity - NEW.quantity \
+                            WHERE prod_id = NEW.prod_id; \
+                        END;''')
+
         return redirect(url_for('view_cart', cust_id=cust_id))
+
 
 # Searching for a product using product brand
 @app.route('/product/brand/<brand>')

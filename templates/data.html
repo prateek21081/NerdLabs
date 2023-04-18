@@ -1,10 +1,3 @@
-<!-- 
-    Pending:
-    1. Add "/product/id/<prod_id> to the search bar using product_name"
-    2. 
--->
-
-
 {% extends "base.html" %}
 {% block content %}
 
@@ -14,7 +7,7 @@
     <form method="post" class="row g-3">
       <div class="col-auto">
         <label for="data" class="visually-hidden">Data</label>
-        <input type="text" name="data" class="form-control" id="inputPassword2" placeholder="Search For.." required style="text-align:center; width: 500px; margin-top: 50px; margin-left: 500px;">
+        <input type="text" name="data" class="form-control" id="inputPassword2" placeholder="Search For.." required style="text-align:center; width: 500px; margin-top: 50px; margin-left: 350px;">
       </div>
       <div class="col-auto">
         <button type="submit" class="btn btn-primary mb-3" style = "margin-top: 50px; margin-left: 15px;">Submit</button>
@@ -44,5 +37,37 @@
             </tbody>
         </table>
         {% endif %}
-    {% endif %}
+        {% endif %}
+    
+        
+        <div style="margin-left: 300px; margin-top: 50px;">
+            Get category wise product count in customer cart:
+            <form method="post" action="/data/query1">
+                <input type="hidden" name="cust_id" value="{{ cust_id }}">
+                <button type="submit" class="btn btn-success" style="margin-right: 80px;">Query 1</button>
+              </form>
+
+            Get date wise revenue:
+            <form method = "post" action = "/data/query2">
+                <input type = "hidden" name = "cust_id" value = "{{ cust_id }}">
+                <button type="submit" class="btn btn-success" style="margin-right: 80px;">Query 2</button>
+            </form>
+
+            Get date wise purchases by customers:
+            <form method = "post" action = "/data/query3">
+                <input type = "hidden" name = "cust_id" value = "{{ cust_id }}">
+                <button type="submit" class="btn btn-success" style="margin-right: 80px;">Query 3</button>
+            </form>
+
+            Get inventory information by product type:
+            <form method = "post" action = "/data/query4">
+                <input type = "hidden" name = "cust_id" value = "{{ cust_id }}">
+                <button type="submit" class="btn btn-success" style="margin-right: 80px;">Query 4</button>
+            </form>
+            
+
+        </div>
+        
 {% endblock %}
+
+

@@ -1,0 +1,49 @@
+
+
+{% extends "base.html" %}
+{% block content %}
+
+{% set screenwidth = 500 %}
+{% set screenheight = 500 %}
+
+    <form method="post" class="row g-3">
+      <div class="col-auto">
+        <label for="data" class="visually-hidden">Data</label>
+        <input type="text" name="data" class="form-control" id="inputPassword2" placeholder="Search For.." required style="text-align:center; width: 500px; margin-top: 50px; margin-left: 350px;">
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-3" style = "margin-top: 50px; margin-left: 15px;">Submit</button>
+      </div>
+    </form>
+
+
+  <table class="table" style="width:50%; margin:auto;">
+
+    <tr>
+
+      <th>Date</th>
+
+      <th>Products Sold</th>
+
+      <th>Revenue</th>
+
+    </tr>
+
+    {% for products in context %}
+
+      <tr>
+
+        <td>{{ products['date'] }}</td>
+
+        <td>{{ products['products_sold'] }}</td>
+
+        <td>{{ products['revenue'] }}</td>
+
+      </tr>
+
+    {% endfor %}
+
+  </table>
+
+
+    {% endblock %}
