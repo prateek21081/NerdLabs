@@ -23,8 +23,8 @@ app.secret_key = b's3cr3t_k3y'
 db = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
-    user = "root",
-    password = "rootpassword$12"
+    user = "admin",
+    password = "pass"
 )
 db.autocommit = True
 cur = db.cursor()
@@ -130,6 +130,26 @@ def get_data():
     else:
         res = None
     return render_template('data.html', context=res)
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        try:
+            cur.execute(f'SELECT * FROM product where prod_name like "%{request.form["keyword"]}%"')
+            keys = cur.column_names
+            values = cur.fetchall()
+            res = {
+                "message": None,
+                "attributes": keys,
+                "records": values
+            }
+        except mysql.connector.Error as err:
+            res = {
+                "message": err
+            }
+    else:
+        res = None
+    return render_template('product/search.html', context=res)
 
 @app.route('/admin/addproduct', methods=['GET', 'POST'])
 def admin_addproduct():

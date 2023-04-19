@@ -12,7 +12,8 @@
         <tbody>
             {% for product in context.products %}
             <tr>
-                {% for val in product %}
+							<td><a class="btn btn-outline-primary" href="/product/id/{{product[0]}}" role="button">{{ product[0] }}</a></td>
+                {% for val in product[1:] %}
                 <td>{{ val }}</td>
                 {% endfor %}
             </tr>

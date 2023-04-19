@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="mx-auto p-3">
+    <form method="post" class="row text-center">
+      <div class="col-auto">
+        <label for="keyword" class="visually-hidden">Search products</label>
+	      <input type="text" name="keyword" class="form-control" id="keyword" placeholder="Enter product name" >
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-3">Search</button>
+      </div>
+    </form>
+    </div>
+    {% if context %}
+        {% if context.message %}
+            <p>{{ context.message }}</p>
+        {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    {% for attr in context.attributes %}
+                    <th>{{ attr }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for rec in context.records %}
+                <tr>
+									<td><a class="btn btn-outline-primary" href="/product/id/{{rec[0]}}" role="button">{{ rec[0] }}</a></td>
+                    {% for val in rec[1:]%}
+                    <td>{{ val }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    {% endif %}
+{% endblock %}
