@@ -151,36 +151,33 @@ def search():
         res = None
     return render_template('product/search.html', context=res)
 
-@app.route('/admin/addproduct', methods=['GET', 'POST'])
-def admin_addproduct():
+@app.route('/admin/add/<category>', methods=['GET', 'POST'])
+def admin_ddproduct(category):
+    res = {
+        "message": None,
+    }
     if request.method == 'POST':
         try:
-            rf = request.form.keys()
-            print(rf)
-            cur.execute(
-                "INSERT INTO product VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                [
-                    request.form['prod_id'], 
-                    request.form['prod_name'], 
-                    request.form['quantity'],
-                    request.form['brand'],
-                    request.form['mrp'],
-                    request.form['discount'],
-                    request.form['price'],
-                    request.form['model'],
-                    request.form['image'],
-                    request.form['GST']
-                ]
-            )
-            res = {
-                "message": None,
-            }
+            values = []
+            cur.execute(f'SELECT * FROM product LIMIT 1')
+            cur.fetchone()
+            print(cur.column_names)
+            for attr in cur.column_names:
+                values.append(request.form[attr])
+            print(values)
+            print(','.join('%s'*len(values)))
+            cur.execute('INSERT INTO product VALUES (' + ','.join(['%s']*len(values)) + ')', values)
+            values = []
+            cur.execute(f'SELECT * FROM {category} LIMIT 1')
+            cur.fetchone()
+            for attr in cur.column_names:
+                values.append(request.form[attr])
+            cur.execute(f'INSERT INTO {category} VALUES (' + ','.join(['%s']*len(values)) + ')', values)
         except mysql.connector.Error as err:
-            res = {
-                "message": err
-            }
-    else:
-        res = None
+            res['message'] = err
+    cur.execute(f'SELECT * FROM product, {category} LIMIT 1')
+    cur.fetchone()
+    res['fields'] = cur.column_names
     return render_template('admin/addproduct.html', context=res)
 
 @app.route('/admin/deleteproduct', methods=['GET', 'POST'])
