@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-center mt-5">Update Product</h1>
+<div class="container">
+<p>{{ context.message }}</p>
+<form method="post">
+  {% for field in context['data'] %}
+  <div class="form-group row">
+    <div class="col-sm-2"><label for="{{field}}">{{field}}</label></div>
+    <div class="col mb-3">
+      <input id="{{field}}" name="{{field}}" value="{{context['data'][field]}}" type="text" class="form-control" required>
+    </div>
+  </div>
+  {% endfor %}
+  <div class="form-group row">
+    <div class="text-center mb-3">
+      <button name="submit" type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </div>
+</form>
+</div>
+{% endblock %}
