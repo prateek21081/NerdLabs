@@ -29,7 +29,7 @@ cnx = mysql.connector.connect(
 cnx.autocommit = True
 cur = cnx.cursor()
 
-def token_required(func):
+def customer_token_required(func):
     @wraps(func)
     def decorated(*args, **kwargs):
         token = None
@@ -50,7 +50,7 @@ def prod_category_by_id(prod_id):
     return category
 
 @app.route('/userid')
-@token_required
+@customer_token_required
 def get_custid(cust_id):
     return make_response(jsonify({'cust_id': cust_id}), 200)
 
@@ -223,7 +223,7 @@ def admin_deleteproduct():
 
 
 @app.route('/cart', methods=['GET', 'POST'])
-@token_required
+@customer_token_required
 def view_cart(cust_id):
     if request.method == 'POST':
         cur.execute('DELETE FROM cart WHERE cart.cust_id = %s AND cart.prod_id = %s', [cust_id, request.form['prod_id']])
@@ -247,7 +247,7 @@ def view_cart(cust_id):
     return render_template('customer/cart.html', context=cart)
 
 @app.route('/invoice', methods=['GET', 'POST'])
-@token_required
+@customer_token_required
 def viewcart(cust_id):
     # Query the database for items in the cart for the customer
     cur.execute('SELECT * FROM cart WHERE cart.cust_id = %s', [cust_id])
@@ -275,32 +275,32 @@ def viewcart(cust_id):
 
 
 @app.route('/data/query1', methods=['GET', 'POST'])
-@token_required
+@customer_token_required
 def query1(cust_id):
     if request.method == 'POST':
-            # Execute query 1
-            cur.execute('SELECT cart.cust_id, \
-            MAX(CASE WHEN cart.prod_id BETWEEN 1 AND 100 THEN cart.quantity ELSE 0 END) AS Motherboard, \
-            MAX(CASE WHEN cart.prod_id BETWEEN 101 AND 200 THEN cart.quantity ELSE 0 END) AS GPU, \
-            MAX(CASE WHEN cart.prod_id BETWEEN 201 AND 300 THEN cart.quantity ELSE 0 END) AS Processor, \
-            MAX(CASE WHEN cart.prod_id BETWEEN 301 AND 400 THEN cart.quantity ELSE 0 END) AS RAM, \
-            MAX(CASE WHEN cart.prod_id BETWEEN 401 AND 500 THEN cart.quantity ELSE 0 END) AS PSU, \
-            MAX(CASE WHEN cart.prod_id BETWEEN 501 AND 600 THEN cart.quantity ELSE 0 END) AS Cabinet, \
-            MAX(CASE WHEN cart.prod_id BETWEEN 601 AND 700 THEN cart.quantity ELSE 0 END) AS Storage \
-            FROM cart \
-            WHERE cart.cust_id = %s \
-            GROUP BY cart.cust_id \
-            ORDER BY cart.cust_id', (cust_id,))
-            keys = cur.column_names
-            values = cur.fetchall()
-            res = list()
-            for val in values:
-                res.append(dict(zip(keys, val)))
-            # print(res)
-            return render_template('data/query1.html', context=res)
+        # Execute query 1
+        cur.execute('SELECT cart.cust_id, \
+        MAX(CASE WHEN cart.prod_id BETWEEN 1 AND 100 THEN cart.quantity ELSE 0 END) AS Motherboard, \
+        MAX(CASE WHEN cart.prod_id BETWEEN 101 AND 200 THEN cart.quantity ELSE 0 END) AS GPU, \
+        MAX(CASE WHEN cart.prod_id BETWEEN 201 AND 300 THEN cart.quantity ELSE 0 END) AS Processor, \
+        MAX(CASE WHEN cart.prod_id BETWEEN 301 AND 400 THEN cart.quantity ELSE 0 END) AS RAM, \
+        MAX(CASE WHEN cart.prod_id BETWEEN 401 AND 500 THEN cart.quantity ELSE 0 END) AS PSU, \
+        MAX(CASE WHEN cart.prod_id BETWEEN 501 AND 600 THEN cart.quantity ELSE 0 END) AS Cabinet, \
+        MAX(CASE WHEN cart.prod_id BETWEEN 601 AND 700 THEN cart.quantity ELSE 0 END) AS Storage \
+        FROM cart \
+        WHERE cart.cust_id = %s \
+        GROUP BY cart.cust_id \
+        ORDER BY cart.cust_id', (cust_id,))
+        keys = cur.column_names
+        values = cur.fetchall()
+        res = list()
+        for val in values:
+            res.append(dict(zip(keys, val)))
+        # print(res)
+        return render_template('data/query1.html', context=res)
 
 @app.route('/data/query2', methods=['GET', 'POST'])
-@token_required
+@customer_token_required
 def query2(cust_id):
     if request.method == 'POST':
         # Execute query 2
@@ -320,7 +320,7 @@ def query2(cust_id):
     
 
 @app.route('/data/query3', methods=['GET', 'POST'])
-@token_required
+@customer_token_required
 def query3(cust_id):
     if request.method == 'POST':
         cur.execute('SELECT COALESCE(DATE(invoice.purchase_time), "2023-02-10") as purchase_date, \
@@ -338,7 +338,7 @@ def query3(cust_id):
     
     
 @app.route('/data/query4', methods=['GET', 'POST'])
-@token_required
+@customer_token_required
 def query4(cust_id):
     if request.method == 'POST':
         cur.execute('SELECT \
@@ -392,7 +392,7 @@ def get_product(prod_id):
         return render_template('product/product.html', context=res)
     
 @app.route('/product/id/<prod_id>', methods=['POST'])
-@token_required
+@customer_token_required
 def add_product_post(cust_id, prod_id):
     if request.method == 'POST':
         quantity = request.form['quantity']
