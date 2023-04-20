@@ -20,14 +20,14 @@ from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = b's3cr3t_k3y'
-db = mysql.connector.connect(
+cnx = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
     user = "admin",
     password = "pass"
 )
-db.autocommit = True
-cur = db.cursor()
+cnx.autocommit = True
+cur = cnx.cursor()
 
 def token_required(func):
     @wraps(func)
@@ -62,8 +62,6 @@ def root():
     res = list()
     for val in values:
         res.append(dict(zip(keys, val)))
-
-    # print(res)
     return render_template('homepage.html', context=res)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -215,13 +213,15 @@ def admin_deleteproduct():
     if request.method == 'POST':
         prod_id = request.form['prod_id']
         category = prod_category_by_id(prod_id)
-        cur.execute("SET FOREIGN_KEY_CHECKS=0")
         try:
+            cnx.start_transaction()
+            cur.execute("SET FOREIGN_KEY_CHECKS=0")
             cur.execute(f"DELETE FROM {category} where prod_id=%s", [prod_id])
             cur.execute(f"DELETE FROM product where prod_id=%s", [prod_id])
+            cur.execute("SET FOREIGN_KEY_CHECKS=1")
+            cnx.commit()
         except mysql.connector.Error as err:
             res['message'] = err
-        cur.execute("SET FOREIGN_KEY_CHECKS=1")
     return render_template('admin/deleteproduct.html', context=res)        
 
 
