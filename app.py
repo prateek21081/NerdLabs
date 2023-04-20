@@ -156,18 +156,16 @@ def admin_addproduct(category):
     }
     if request.method == 'POST':
         try:
-            values = []
+            cnx.start_transaction()
             cur.execute(f'SELECT * FROM product LIMIT 1')
             cur.fetchone()
-            for attr in cur.column_names:
-                values.append(request.form[attr])
+            values = [request.form[attr] for attr in cur.column_names]
             cur.execute('INSERT INTO product VALUES (' + ','.join(['%s']*len(values)) + ')', values)
-            values = []
             cur.execute(f'SELECT * FROM {category} LIMIT 1')
             cur.fetchone()
-            for attr in cur.column_names:
-                values.append(request.form[attr])
+            values = [request.form[attr] for attr in cur.column_names]
             cur.execute(f'INSERT INTO {category} VALUES (' + ','.join(['%s']*len(values)) + ')', values)
+            cnx.commit()
         except mysql.connector.Error as err:
             res['message'] = err
     cur.execute(f'SELECT * FROM product, {category} LIMIT 1')
@@ -182,13 +180,13 @@ def admin_updateproduct(prod_id):
     }
     category = prod_category_by_id(prod_id)
     if request.method == 'POST':
-        cur.execute("SET FOREIGN_KEY_CHECKS=0")
         try:
+            cur.execute("SET FOREIGN_KEY_CHECKS=0")
             cur.execute(f"DELETE FROM {category} where prod_id=%s", [prod_id])
             cur.execute(f"DELETE FROM product where prod_id=%s", [prod_id])
+            cur.execute("SET FOREIGN_KEY_CHECKS=1")
         except mysql.connector.Error as err:
             res['message'] = err
-        cur.execute("SET FOREIGN_KEY_CHECKS=1")
         values = []
         cur.execute(f'SELECT * FROM product LIMIT 1')
         cur.fetchone()
