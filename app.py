@@ -1,8 +1,3 @@
-'''
-1. Transactions pending.
-
-'''
-
 from flask import (
     Flask,
     request,
@@ -28,6 +23,21 @@ cnx = mysql.connector.connect(
 )
 cnx.autocommit = True
 cur = cnx.cursor()
+
+def admin_token_required(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        token = None
+        try:
+            token = request.cookies['ajwt']
+            data = jwt.decode(token, app.secret_key, algorithms=["HS256"])
+            man_id = data['man_id']
+        except:
+            return make_response(jsonify({
+                'message': 'Admin Token invalid or missing!'
+            }), 401)
+        return func(man_id, *args, **kwargs)
+    return decorated
 
 def customer_token_required(func):
     @wraps(func)
@@ -77,11 +87,7 @@ def login():
         elif not password == user[1]:
             error = "Incorrect password."
         if error:
-            return make_response(
-                error,
-                401,
-                {'WWW-Authenticate' : 'Basic realm = "Invalid credentials!"'}
-            )
+            return make_response(error, 401)
         else:
             token = jwt.encode({
                 'cust_id': user[0],
@@ -114,7 +120,8 @@ def register():
     return render_template('auth/register.html', context=res)
 
 @app.route('/data', methods=['GET', 'POST'])
-def get_data():
+@admin_token_required
+def get_data(man_id):
     if request.method == 'POST':
         try:
             cur.execute(f"SELECT * FROM {request.form['data']}")
@@ -154,8 +161,33 @@ def search():
         res = None
     return render_template('product/search.html', context=res)
 
+@app.route('/admin', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        error = None
+        cur.execute("SELECT man_id, password FROM manager WHERE username = %s", [username])
+        user = cur.fetchone()
+        if user is None:
+            error = "Incorrect username."
+        elif not password == user[1]:
+            error = "Incorrect password."
+        if error:
+            return make_response(error, 401)
+        else:
+            token = jwt.encode({
+                'man_id': user[0],
+                'expiry': str(datetime.utcnow()) + str(timedelta(minutes=30))
+            }, app.secret_key, algorithm="HS256")
+            resp = redirect('/')
+            resp.set_cookie('ajwt', token);
+            return resp;
+    return render_template('auth/login.html')
+
 @app.route('/admin/add/<category>', methods=['GET', 'POST'])
-def admin_addproduct(category):
+@admin_token_required
+def admin_addproduct(man_id, category):
     res = {
         "message": None,
     }
@@ -179,7 +211,8 @@ def admin_addproduct(category):
     return render_template('admin/addproduct.html', context=res)
 
 @app.route('/admin/update/<prod_id>', methods=['GET', 'POST'])
-def admin_updateproduct(prod_id):
+@admin_token_required
+def admin_updateproduct(man_id, prod_id):
     res = {
         "message": None,
     }
@@ -207,7 +240,8 @@ def admin_updateproduct(prod_id):
     return render_template('admin/updateproduct.html', context=res)
 
 @app.route('/admin/delete', methods=['GET', 'POST'])
-def admin_deleteproduct():
+@admin_token_required
+def admin_deleteproduct(man_id):
     res = {
         "message": None,
     }
@@ -224,8 +258,6 @@ def admin_deleteproduct():
         except mysql.connector.Error as err:
             res['message'] = err
     return render_template('admin/deleteproduct.html', context=res)        
-
-
 
 @app.route('/cart', methods=['GET', 'POST'])
 @customer_token_required
@@ -280,8 +312,8 @@ def viewcart(cust_id):
 
 
 @app.route('/data/query1', methods=['GET', 'POST'])
-@customer_token_required
-def query1(cust_id):
+@admin_token_required
+def query1(man_id):
     if request.method == 'POST':
         # Execute query 1
         cur.execute('SELECT cart.cust_id, \
@@ -305,8 +337,8 @@ def query1(cust_id):
         return render_template('data/query1.html', context=res)
 
 @app.route('/data/query2', methods=['GET', 'POST'])
-@customer_token_required
-def query2(cust_id):
+@admin_token_required
+def query2(man_id):
     if request.method == 'POST':
         # Execute query 2
         cur.execute('SELECT DATE(invoice.purchase_time) as date, \
@@ -322,11 +354,10 @@ def query2(cust_id):
             res.append(dict(zip(keys, val)))
         # print(res)
         return render_template('data/query2.html', context=res)
-    
 
 @app.route('/data/query3', methods=['GET', 'POST'])
-@customer_token_required
-def query3(cust_id):
+@admin_token_required
+def query3(man_id):
     if request.method == 'POST':
         cur.execute('SELECT COALESCE(DATE(invoice.purchase_time), "2023-02-10") as purchase_date, \
         COALESCE(invoice.cust_id, "2") as cust_id, \
@@ -341,10 +372,9 @@ def query3(cust_id):
         # print(res)
         return render_template('data/query3.html', context=res)
     
-    
 @app.route('/data/query4', methods=['GET', 'POST'])
-@customer_token_required
-def query4(cust_id):
+@admin_token_required
+def query4(man_id):
     if request.method == 'POST':
         cur.execute('SELECT \
             CASE \
