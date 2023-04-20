@@ -94,19 +94,24 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    res = {
+        "message": None,
+    }
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        error = None
-        if not password or not username:
-            error = 'Username and password required.'
-        if error is None:
-            cur.execute("INSERT INTO test VALUES (%s, %s)", [username, password])
-            return make_response('Successfully registered!', 201)
-        else:
-            return make_response('Invalid response!', 202)
-    else:
-        return render_template('auth/register.html')
+        try:
+            cnx.start_transaction()
+            cur.execute(f'SELECT * FROM customer LIMIT 1')
+            cur.fetchone()
+            values = [request.form[attr] for attr in cur.column_names]
+            print(values)
+            cur.execute('INSERT INTO customer VALUES (' + ','.join(['%s']*len(values)) + ')', values)
+            cnx.commit()
+        except mysql.connector.Error as err:
+            res['message'] = err
+    cur.execute(f'SELECT * FROM customer LIMIT 1')
+    cur.fetchone()
+    res['fields'] = cur.column_names
+    return render_template('auth/register.html', context=res)
 
 @app.route('/data', methods=['GET', 'POST'])
 def get_data():
