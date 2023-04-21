@@ -1,3 +1,9 @@
+'''
+Manager:
+    dosgar0
+    53LLHBxrP9
+'''
+
 from flask import (
     Flask,
     request,
@@ -18,8 +24,8 @@ app.secret_key = b's3cr3t_k3y'
 cnx = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
-    user = "admin",
-    password = "pass"
+    user = "root",
+    password = "rootpassword$12"
 )
 cnx.autocommit = True
 cur = cnx.cursor()
@@ -312,8 +318,8 @@ def viewcart(cust_id):
 
 
 @app.route('/data/query1', methods=['GET', 'POST'])
-@admin_token_required
-def query1(man_id):
+@customer_token_required
+def query1(cust_id):
     if request.method == 'POST':
         # Execute query 1
         cur.execute('SELECT cart.cust_id, \
