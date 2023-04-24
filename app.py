@@ -24,8 +24,8 @@ app.secret_key = b's3cr3t_k3y'
 cnx = mysql.connector.connect(
     host = "localhost",
     database = "nerdlabs",
-    user = "root",
-    password = "rootpassword$12"
+    user = "admin",
+    password = "pass"
 )
 cnx.autocommit = True
 cur = cnx.cursor()
@@ -269,7 +269,6 @@ def admin_deleteproduct(man_id):
 @customer_token_required
 def view_cart(cust_id):
     if request.method == 'POST':
-        cur.execute('DELETE FROM cart WHERE cart.cust_id = %s AND cart.prod_id = %s', [cust_id, request.form['prod_id']])
         cur.execute('drop trigger if exists update_quantity_on_remove;')
         cur.execute('''CREATE TRIGGER update_quantity_on_remove
                         AFTER DELETE ON cart FOR EACH ROW
@@ -278,6 +277,7 @@ def view_cart(cust_id):
                             set quantity = quantity + OLD.quantity
                             where prod_id = OLD.prod_id;
                         END;''')
+        cur.execute('DELETE FROM cart WHERE cart.cust_id = %s AND cart.prod_id = %s', [cust_id, request.form['prod_id']])
     cur.execute('SELECT * FROM cart WHERE cart.cust_id = %s', [cust_id])
     keys = cur.column_names
     values = cur.fetchall()
@@ -414,17 +414,23 @@ def get_product(prod_id):
     if request.method == 'GET':
         category = prod_category_by_id(prod_id)
         res = dict()
-        cur.execute(f'SELECT * FROM product WHERE product.prod_id = %s', [prod_id])
-        keys = cur.column_names
-        values = cur.fetchone()
-        res['product'] = dict(zip(keys, values))
-        cur.execute(f'SELECT * FROM {category} WHERE {category}.prod_id = %s', [prod_id])
-        keys = cur.column_names
-        values = cur.fetchone()
-        res['meta'] = dict(zip(keys, values))
-        cur.execute('SELECT * FROM review WHERE review.prod_id = %s', [prod_id])
-        keys = cur.column_names
-        values = cur.fetchall()
+        try:
+            cnx.start_transaction()
+            cur.execute(f'SELECT * FROM product WHERE product.prod_id = %s', [prod_id])
+            keys = cur.column_names
+            values = cur.fetchone()
+            res['product'] = dict(zip(keys, values))
+            cur.execute(f'SELECT * FROM {category} WHERE {category}.prod_id = %s', [prod_id])
+            keys = cur.column_names
+            values = cur.fetchone()
+            res['meta'] = dict(zip(keys, values))
+            cur.execute('SELECT * FROM review WHERE review.prod_id = %s', [prod_id])
+            keys = cur.column_names
+            values = cur.fetchall()
+            cnx.commit()
+        except mysql.connector.Error as err:
+            cnx.rollback();
+            res['message'] = err
         review = list()
         for val in values:
             review.append(dict(zip(keys, val)))
