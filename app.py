@@ -229,6 +229,7 @@ def admin_updateproduct(man_id, prod_id):
             cur.execute("SET FOREIGN_KEY_CHECKS=0")
             cur.execute(f"DELETE FROM {category} where prod_id=%s", [prod_id])
             cur.execute(f"DELETE FROM product where prod_id=%s", [prod_id])
+            cur.execute("DELETE FROM review where prod_id=%s", [prod_id])
             cur.execute("SET FOREIGN_KEY_CHECKS=1")
             cur.execute(f'SELECT * FROM product LIMIT 1')
             cur.fetchone()
@@ -259,6 +260,7 @@ def admin_deleteproduct(man_id):
             cur.execute("SET FOREIGN_KEY_CHECKS=0")
             cur.execute(f"DELETE FROM {category} where prod_id=%s", [prod_id])
             cur.execute(f"DELETE FROM product where prod_id=%s", [prod_id])
+            cur.execute("DELETE FROM review where prod_id=%s", [prod_id])
             cur.execute("SET FOREIGN_KEY_CHECKS=1")
             cnx.commit()
         except mysql.connector.Error as err:
