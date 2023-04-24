@@ -100,7 +100,7 @@ def login():
                 'expiry': str(datetime.utcnow()) + str(timedelta(minutes=30))
             }, app.secret_key, algorithm="HS256")
             resp = redirect('/')
-            resp.set_cookie('jwt', token);
+            resp.set_cookie('jwt', token)
             return resp;
     return render_template('auth/login.html')
 
@@ -187,7 +187,7 @@ def admin_login():
                 'expiry': str(datetime.utcnow()) + str(timedelta(minutes=30))
             }, app.secret_key, algorithm="HS256")
             resp = redirect('/')
-            resp.set_cookie('ajwt', token);
+            resp.set_cookie('ajwt', token)
             return resp;
     return render_template('auth/login.html')
 
@@ -295,28 +295,41 @@ def view_cart(cust_id):
 @customer_token_required
 def viewcart(cust_id):
     # Query the database for items in the cart for the customer
-    cur.execute('SELECT * FROM cart WHERE cart.cust_id = %s', [cust_id])
-    keys = cur.column_names
-    values = cur.fetchall()
-    cart = list()
-    for val in values:
-        cart.append(dict(zip(keys, val)))
-    for item in cart:
-        cur.execute('SELECT price FROM product WHERE product.prod_id = %s', [item['prod_id']])
-        item['price'] = cur.fetchone()[0]
+    try:
+        cnx.start_transaction()
+        cur.execute('SELECT * FROM cart WHERE cart.cust_id = %s', [cust_id])
+        keys = cur.column_names
+        values = cur.fetchall()
+        if len(values) == 0:
+            cnx.rollback()
+            return "Cart empty!"
+        amount = 0
+        cart = list()
+        for val in values:
+            cart.append(dict(zip(keys, val)))
+        for item in cart:
+            cur.execute('SELECT price FROM product WHERE product.prod_id = %s', [item['prod_id']])
+            item['price'] = cur.fetchone()[0]
+            amount += int(item['price']) * int(item['quantity'])
 
-    # Query and display all the inv_id for the customer using cust_id
-    cur.execute('SELECT inv_id, delivery_time FROM invoice WHERE invoice.cust_id = %s', [cust_id])
-    inv_id = cur.fetchall()
-    print(inv_id)
-    
-    # for customer add customer details to the invoice
-    cur.execute('SELECT * FROM customer WHERE customer.cust_id = %s', [cust_id])
-    keys = cur.column_names
-    values = cur.fetchone()
-    customer = dict(zip(keys, values))
-    # print(customer)
-    return render_template('customer/invoice.html', context1=cart, context2 = customer, context3 = inv_id)
+        # Add invoice information in database
+        cur.execute('SELECT MAX(inv_id) FROM invoice')
+        inv_id = int(cur.fetchone()[0]) + 1
+        for item in cart:
+            cur.execute('INSERT INTO invoice VALUES (%s, now(), %s, %s, %s, now())', [inv_id, cust_id, item['prod_id'], item['quantity']])
+            inv_id = inv_id + 1
+ 
+        # for customer add customer details to the invoice
+        cur.execute('SELECT * FROM customer WHERE customer.cust_id = %s', [cust_id])
+        keys = cur.column_names
+        values = cur.fetchone()
+        customer = dict(zip(keys, values))
+        cur.execute('DELETE FROM cart WHERE cust_id=%s', [cust_id])
+        cnx.commit()
+    except mysql.connector.Error as err:
+        cnx.rollback()
+        return err
+    return render_template('customer/invoice.html', date=datetime.now(), cart=cart, customer=customer, total=amount)
 
 
 @app.route('/data/query1', methods=['GET', 'POST'])
@@ -431,7 +444,7 @@ def get_product(prod_id):
             values = cur.fetchall()
             cnx.commit()
         except mysql.connector.Error as err:
-            cnx.rollback();
+            cnx.rollback()
             res['message'] = err
         review = list()
         for val in values:

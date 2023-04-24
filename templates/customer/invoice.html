@@ -1,35 +1,30 @@
-
 {% extends "base.html" %}
-{% set total = 0 %}
 {% block content %}
 
   <div class="container py-5">
-    <h1>Invoice</h1>
+    <h1>Invoice Details</h1>
     <div class="row">
       <div class="col-md-6">
       </div>
       <form method="GET">
         <div>
-          <h5>Invoice ID: {{context3[0][0]}}</h5>
-          <h5>Purchase Date: {{context3[0][1]}}</h5>
+          <h5>Invoice</h5>
+          <h5>Purchase Date: {{date}}</h5>
         </div>
       </div>
       <hr>
         <div class="row mt-4">
           <div class="col-md-6">
             <h5>Bill To:</h5>
-            <p>{{ context2['first_name'] }} {{ context2['last_name'] }}</p>
+            <p>{{ customer['first_name'] }} {{ customer['last_name'] }}</p>
           </div>
           <div class="col-md-6 text-end">
             <h5>Ship To:</h5>
-            <p>{{ context2['addr_loc'] }}</p>
-            <p>{{ context2['addr_city'] }} {{ context2['addr_pin'] }}</p>
+            <p>{{ customer['addr_loc'] }}</p>
+            <p>{{ customer['addr_city'] }} {{ customer['addr_pin'] }}</p>
           </div>
         </div>
-
-
-    <hr>
-
+      <hr>
         <div class="row mt-4">
           <div class="col-md-12">
             <table class="table table-bordered">
@@ -43,12 +38,12 @@
               </thead>
               <tbody>
                 
-                {% for item in context1 %}
+                {% for item in cart %}
                     <tr>
                       <td>{{ item.prod_id }}</td>
                       <td>{{ item.price }}</td>
                       <td>{{ item.quantity }}</td>
-                      <td>{{ (item.price) *(item.quantity) }}</td>
+                      <td>{{ (item.price) * (item.quantity) }}</td>
                     </tr>
                 {% endfor %}
               </tbody>
@@ -58,8 +53,6 @@
     </form>
     <div class="row mt-4">
       <div class="col-md-12 text-end">
-        <h5>Subtotal: {{ total }}</h5>
-        <h5>Tax: {{ tax }}</h5>
         <h2>Total: {{ total }}</h2>
       </div>
     </div>
